@@ -99,10 +99,16 @@ static void notify(GDBusConnection *conn, const gchar *sender,
     Actions *actions = g_malloc0(sizeof(Actions));
 #endif
     int32_t timeout = -1;
+#if URGENCY
+    enum Urgency urgency = 1;
+#endif
 
     {
         GVariantIter *iter = g_variant_iter_new(params);
         GVariant *content;
+#if URGENCY
+        GVariant *dict_value;
+#endif
         int idx = 0;
         while ((content = g_variant_iter_next_value(iter))) {
             switch (idx) {
@@ -131,6 +137,13 @@ static void notify(GDBusConnection *conn, const gchar *sender,
                 break;
             case 6:
                 if (g_variant_is_of_type(content, G_VARIANT_TYPE_DICTIONARY)) {
+#if URGENCY
+                    dict_value = g_variant_lookup_value(content, "urgency", G_VARIANT_TYPE_BYTE);
+                    if (dict_value) {
+                        urgency = g_variant_get_byte(dict_value);
+                        g_variant_unref(dict_value);
+                    }
+#endif
                     // TODO: support hints
                 }
                 break;
@@ -163,6 +176,9 @@ static void notify(GDBusConnection *conn, const gchar *sender,
     Note *note = new_note(n_id, appname, summary, body,
 #if ACTIONS
                           actions,
+#endif
+#if URGENCY
+                          urgency,
 #endif
                           timeout);
     enqueue_note(note, g_strdup(sender));

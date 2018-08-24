@@ -26,20 +26,37 @@
 
 #define VERSION 0.2
 
-// By default, say we support actions
+/*
+ * Optional features
+ */
+
 #ifndef ACTIONS
 #define ACTIONS 1
 #endif
 
+#ifndef URGENCY
+#define URGENCY 1
+#endif
+
 // TODO: more optional features
 //  - ICON
-//  - URGENCY, to treat URGENCY specially
 
 #if ACTIONS
 typedef struct {
     char **actions;
     size_t count;
 } Actions;
+#endif
+
+#if URGENCY
+enum Urgency {
+    URG_NONE = -1,
+    URG_MIN  =  0,
+    URG_LOW  =  0,
+    URG_NORM =  1,
+    URG_CRIT =  2,
+    URG_MAX  =  2
+};
 #endif
 
 typedef struct {
@@ -51,6 +68,10 @@ typedef struct {
     int timeout;
 #if ACTIONS
     Actions *actions;
+#endif
+
+#if URGENCY
+    enum Urgency urgency;
 #endif
 
     // TODO: hints

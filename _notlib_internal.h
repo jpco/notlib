@@ -45,14 +45,17 @@ void dequeue_note(uint32_t id, enum CloseReason);
 
 // note.c
 
-extern Note *new_note(uint32_t,    /* id */
-                      char *,      /* app name */
-                      char *,      /* summary */
-                      char *,      /* body */
+extern Note *new_note(uint32_t,     /* id */
+                      char *,       /* app name */
+                      char *,       /* summary */
+                      char *,       /* body */
 #if ACTIONS
-                      Actions *,   /* actions */
+                      Actions *,    /* actions */
 #endif
-                      int32_t      /* timeout */
+#if URGENCY
+                      enum Urgency, /* urgency */
+#endif
+                      int32_t       /* timeout */
                       /* TODO: hints */
                      );
 

@@ -29,6 +29,9 @@ extern Note *new_note(uint32_t id, char *appname,
 #if ACTIONS
                       Actions *actions,
 #endif
+#if URGENCY
+                      enum Urgency urgency,
+#endif
                       int32_t timeout /* TODO: hints */) {
     Note *n = g_malloc(sizeof(Note));
 
@@ -39,6 +42,9 @@ extern Note *new_note(uint32_t id, char *appname,
     n->timeout = timeout;
 #if ACTIONS
     n->actions = actions;
+#endif
+#if URGENCY
+    n->urgency = urgency;
 #endif
     // TODO: hints
     return n;

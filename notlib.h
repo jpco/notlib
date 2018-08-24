@@ -30,10 +30,6 @@
  * Optional features
  */
 
-#define FEATURE_GUARD(feature_nm,stmt) \
-    if (feature_nm) \
-        do {(stmt)} while (0);
-
 #ifndef ACTIONS
 #define ACTIONS 1
 #endif
@@ -70,7 +66,9 @@ typedef struct {
     char *body;
 
     int timeout;
-    FEATURE_GUARD(ACTIONS,Actions *actions;)
+#if ACTIONS
+    Actions *actions;
+#endif
 
 #if URGENCY
     enum Urgency urgency;
@@ -85,6 +83,12 @@ typedef struct {
     void (*replace) (const Note *);
 } NoteCallbacks;
 
+typedef struct {
+    char *app_name;
+    char *author;
+    char *version;
+} ServerInfo;
+
 /* public functions */
 
 /*
@@ -95,7 +99,7 @@ typedef struct {
  *
  * TODO: allow client to provide information for GetServerInformation
  */
-extern void notlib_run(NoteCallbacks);
+extern void notlib_run(NoteCallbacks, ServerInfo*);
 
 // TODO: allow client to close notes (would the close callback get called?)
 

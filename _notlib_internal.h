@@ -17,12 +17,14 @@
  * along with notlib.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _NOTLIB_INTERNAL_H
+#define _NOTLIB_INTERNAL_H
+
 #define FDN_PATH "/org/freedesktop/Notifications"
 #define FDN_IFAC "org.freedesktop.Notifications"
 #define FDN_NAME "org.freedesktop.Notifications"
 
-#ifndef _NOTLIB_INTERNAL_H
-#define _NOTLIB_INTERNAL_H
+#define DBUS_VERSION "1.2"
 
 // Generated from introspection.xml
 extern const char *dbus_introspection_xml;

@@ -75,12 +75,25 @@ static void close_notification(GDBusConnection *conn, const gchar *sender,
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
 
+static ServerInfo *server_info;
+
 static void get_server_information(GDBusConnection *conn, const gchar *sender,
                                    const GVariant *params,
                                    GDBusMethodInvocation *invocation) {
     GVariant *value;
-    // TODO: Allow clients to set this
-    value = g_variant_new("(ssss)", "notlib", "jpco", VERSION, "1.2");
+    if (server_info) {
+        value = g_variant_new("(ssss)",
+                              server_info->app_name,
+                              server_info->author,
+                              server_info->version,
+                              DBUS_VERSION);
+    } else {
+        value = g_variant_new("(ssss)",
+                              "A notlib-based application",
+                              "Anonymous",
+                              "0.0",
+                              DBUS_VERSION);
+    }
     g_dbus_method_invocation_return_value(invocation, value);
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
@@ -279,7 +292,7 @@ static void on_name_lost(GDBusConnection *conn, const gchar *name,
  * The entry point to notlib.
  */
 
-extern void notlib_run(NoteCallbacks cbs) {
+extern void notlib_run(NoteCallbacks cbs, ServerInfo *info) {
     GMainLoop *loop;
     guint owner_id;
 
@@ -295,6 +308,7 @@ extern void notlib_run(NoteCallbacks cbs) {
                               NULL, NULL);
 
     callbacks = cbs;
+    server_info = info;
 
     loop = g_main_loop_new(NULL, FALSE);
     g_main_loop_run(loop);

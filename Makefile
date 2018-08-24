@@ -29,12 +29,17 @@ ${LIBFULL} : ${CSRC} ${HSRC} ${INCLUDE} ${GEN} Makefile
 	mkdir -p $(addprefix build/, include lib src)
 	install -m 644 ${CSRC} ${HSRC} introspection.xml build/src
 	install -m 644 ${INCLUDE} build/include
-	mv ${LIBFULL} ${LIBMAJOR} ${LIBNAME} build/lib
+	mv -f ${LIBFULL} ${LIBMAJOR} ${LIBNAME} build/lib
 
 
 install : ${LIBFULL}
 	mkdir -p $(addprefix /usr/local/, src lib include)
 	cp -r $(wildcard build/*) /usr/local
+
+
+clean :
+	rm -r build/
+	rm ${GEN}
 
 
 # strange hacks here, in order to make sure the generated string is

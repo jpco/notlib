@@ -30,6 +30,10 @@
  * Optional features
  */
 
+#define FEATURE_GUARD(feature_nm,stmt) \
+    if (feature_nm) \
+        do {(stmt)} while (0);
+
 #ifndef ACTIONS
 #define ACTIONS 1
 #endif
@@ -66,9 +70,7 @@ typedef struct {
     char *body;
 
     int timeout;
-#if ACTIONS
-    Actions *actions;
-#endif
+    FEATURE_GUARD(ACTIONS,Actions *actions;)
 
 #if URGENCY
     enum Urgency urgency;

@@ -1,5 +1,3 @@
-# NOTE: `xxd` is a build-time dependency
-
 CC = gcc
 
 MAJOR = 0
@@ -12,25 +10,27 @@ LIBFULL  = ${LIBNAME}.${MAJOR}.${MINOR}
 INCLUDE = notlib.h
 HSRC    = _notlib_internal.h
 CSRC    = dbus.c note.c queue.c
-GEN     = generated_xml.c
-
-LINKFLAGS = -Wl,-soname,${LIBMAJOR}
-CFLAGS    = -fPIC -Wall -Werror -pthread -O2
+OBJS    = dbus.o note.o queue.o
 
 DEPS     = gio-2.0 gobject-2.0 glib-2.0
 LIBS     = $(shell pkg-config --libs ${DEPS})
 INCLUDES = $(shell pkg-config --cflags ${DEPS})
 
+LIBFLAGS = -Wl,-soname,${LIBMAJOR}
+CFLAGS   = -fPIC -Wall -Werror -pthread -O2 ${LIBS} ${INCLUDES} ${DEFINES}
 
-${LIBFULL} : ${CSRC} ${HSRC} ${INCLUDE} ${GEN} Makefile
-	${CC} -shared -o $@ ${LINKFLAGS} ${LIBS} ${DEFINES} ${CSRC} ${GEN} ${CFLAGS} ${INCLUDES}
+${LIBFULL} : ${OBJS} Makefile
+	${CC} -shared -o $@ ${LIBFLAGS} ${OBJS}
 	ln -s ${LIBFULL} ${LIBMAJOR}
 	ln -s ${LIBMAJOR} ${LIBNAME}
 	mkdir -p $(addprefix build/, include lib src)
-	install -m 644 ${CSRC} ${HSRC} introspection.xml build/src
+	install -m 644 ${CSRC} ${HSRC} build/src
 	install -m 644 ${INCLUDE} build/include
 	mv -f ${LIBFULL} ${LIBMAJOR} ${LIBNAME} build/lib
 
+
+static	: ${OBJS} Makefile
+	ar rcs libnotlib.a ${OBJS}
 
 install : ${LIBFULL}
 	mkdir -p $(addprefix /usr/local/, src lib include)
@@ -38,14 +38,9 @@ install : ${LIBFULL}
 
 
 clean :
-	rm -r build/
-	rm ${GEN}
+	rm -r ${OBJS} libnotlib.a build/
 
 
-# strange hacks here, in order to make sure the generated string is
-# NUL-terminated
-generated_xml.c	: introspection.xml
-	cp introspection.xml dbus_introspection.xml
-	echo -en '\0' >> dbus_introspection.xml
-	xxd -i dbus_introspection.xml > generated_xml.c
-	rm dbus_introspection.xml
+dbus.o	: dbus.c _notlib_internal.h
+note.o 	: note.c _notlib_internal.h
+queue.o	: queue.c _notlib_internal.h

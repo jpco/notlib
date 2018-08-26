@@ -36,6 +36,7 @@ typedef struct qn {
 
 static qnode *note_queue_start = NULL;
 static qnode *note_queue_end = NULL;
+NoteCallbacks callbacks;
 
 static void dequeue_note_by_node(qnode *qn, enum CloseReason reason) {
     if (qn->prev != NULL) {

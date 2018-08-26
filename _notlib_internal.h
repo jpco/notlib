@@ -26,9 +26,6 @@
 
 #define DBUS_VERSION "1.2"
 
-// Generated from introspection.xml
-extern const char *dbus_introspection_xml;
-
 enum CloseReason {
     CLOSE_REASON_MIN        = 1,
     CLOSE_REASON_EXPIRED    = 1,

@@ -33,7 +33,50 @@
 
 static GDBusConnection *dbus_conn;
 static GDBusNodeInfo *introspection_data = NULL;
-extern const char *dbus_introspection_xml;
+
+static const char *dbus_introspection_xml =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+    "<node name=\"" FDN_PATH "\">"
+    "    <interface name=\"" FDN_IFAC "\">"
+
+    "        <method name=\"GetCapabilities\">"
+    "            <arg direction=\"out\" name=\"capabilities\"    type=\"as\"/>"
+    "        </method>"
+
+    "        <method name=\"Notify\">"
+    "            <arg direction=\"in\"  name=\"app_name\"        type=\"s\"/>"
+    "            <arg direction=\"in\"  name=\"replaces_id\"     type=\"u\"/>"
+    "            <arg direction=\"in\"  name=\"app_icon\"        type=\"s\"/>"
+    "            <arg direction=\"in\"  name=\"summary\"         type=\"s\"/>"
+    "            <arg direction=\"in\"  name=\"body\"            type=\"s\"/>"
+    "            <arg direction=\"in\"  name=\"actions\"         type=\"as\"/>"
+    "            <arg direction=\"in\"  name=\"hints\"           type=\"a{sv}\"/>"
+    "            <arg direction=\"in\"  name=\"expire_timeout\"  type=\"i\"/>"
+    "            <arg direction=\"out\" name=\"id\"              type=\"u\"/>"
+    "        </method>"
+
+    "        <method name=\"CloseNotification\">"
+    "            <arg direction=\"in\"  name=\"id\"              type=\"u\"/>"
+    "        </method>"
+
+    "        <method name=\"GetServerInformation\">"
+    "            <arg direction=\"out\" name=\"name\"            type=\"s\"/>"
+    "            <arg direction=\"out\" name=\"vendor\"          type=\"s\"/>"
+    "            <arg direction=\"out\" name=\"version\"         type=\"s\"/>"
+    "            <arg direction=\"out\" name=\"spec_version\"    type=\"s\"/>"
+    "        </method>"
+
+    "        <signal name=\"NotificationClosed\">"
+    "            <arg name=\"id\"         type=\"u\"/>"
+    "            <arg name=\"reason\"     type=\"u\"/>"
+    "        </signal>"
+
+    "        <signal name=\"ActionInvoked\">"
+    "            <arg name=\"id\"         type=\"u\"/>"
+    "            <arg name=\"action_key\" type=\"s\"/>"
+    "        </signal>"
+    "   </interface>"
+    "</node>";
 
 /**
  * DBus method call logic
@@ -81,6 +124,7 @@ static void get_server_information(GDBusConnection *conn, const gchar *sender,
                                    const GVariant *params,
                                    GDBusMethodInvocation *invocation) {
     GVariant *value;
+
     if (server_info) {
         value = g_variant_new("(ssss)",
                               server_info->app_name,
@@ -99,7 +143,6 @@ static void get_server_information(GDBusConnection *conn, const gchar *sender,
 }
 
 static unsigned int id = 0;
-NoteCallbacks callbacks;
 
 static void notify(GDBusConnection *conn, const gchar *sender,
                    GVariant *params,
@@ -194,6 +237,7 @@ static void notify(GDBusConnection *conn, const gchar *sender,
                           urgency,
 #endif
                           timeout);
+
     enqueue_note(note, g_strdup(sender));
 
     GVariant *reply = g_variant_new("(u)", n_id);

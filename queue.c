@@ -51,9 +51,10 @@ static void dequeue_note_by_node(qnode *qn, enum CloseReason reason) {
         note_queue_end = qn->prev;
     }
 
-    signal_notification_closed(qn->n, qn->client, reason);
     if (callbacks.close != NULL)
         callbacks.close(qn->n);
+
+    signal_notification_closed(qn->n, qn->client, reason);
 
     free_note(qn->n);
     g_free(qn->client);
@@ -128,7 +129,7 @@ extern void enqueue_note(Note *n, gchar *client) {
         new_qn->prev = note_queue_end;
         note_queue_end = new_qn;
     }
+    setup_qnode(new_qn, n, client);
 
     callbacks.notify(n);
-    setup_qnode(new_qn, n, client);
 }

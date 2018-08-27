@@ -36,6 +36,7 @@ enum CloseReason {
 };
 
 extern NoteCallbacks callbacks;
+extern ServerInfo *server_info;
 
 // queue.c
 
@@ -68,5 +69,6 @@ extern int32_t note_timeout(const Note *);
 
 extern void signal_notification_closed(Note *, const gchar *, enum CloseReason);
 extern void signal_action_invoked(Note *, const gchar *, const char *);
+extern void run_dbus_loop();
 
 #endif  // _NOTLIB_INTERNAL_H

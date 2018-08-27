@@ -9,8 +9,8 @@ LIBFULL  = ${LIBNAME}.${MAJOR}.${MINOR}
 
 INCLUDE = notlib.h
 HSRC    = _notlib_internal.h
-CSRC    = dbus.c note.c queue.c
-OBJS    = dbus.o note.o queue.o
+CSRC    = dbus.c note.c queue.c notlib.c
+OBJS    = dbus.o note.o queue.o notlib.o
 
 DEPS     = gio-2.0 gobject-2.0 glib-2.0
 LIBS     = $(shell pkg-config --libs ${DEPS})
@@ -41,6 +41,7 @@ clean :
 	rm -r ${OBJS} libnotlib.a build/
 
 
-dbus.o	: dbus.c _notlib_internal.h
-note.o 	: note.c _notlib_internal.h
-queue.o	: queue.c _notlib_internal.h
+dbus.o      : dbus.c   notlib.h _notlib_internal.h
+notlib.o    : notlib.c notlib.h _notlib_internal.h
+note.o      : note.c   notlib.h _notlib_internal.h
+queue.o     : queue.c  notlib.h _notlib_internal.h

@@ -101,10 +101,12 @@ typedef struct {
  */
 extern void notlib_run(NoteCallbacks, ServerInfo*);
 
-// TODO: allow client to close notes (would the close callback get called?)
+extern void close_note(unsigned int);
 
 #if ACTIONS
-// TODO: allow client to interact with actions
+// extern void invoke_action(unsigned int, char *);
+// char *action_keys(Note *);
+// char *action_name(Note *, char *);
 #endif
 
 #endif

@@ -75,6 +75,7 @@ static const char *dbus_introspection_xml =
     "            <arg name=\"id\"         type=\"u\"/>"
     "            <arg name=\"action_key\" type=\"s\"/>"
     "        </signal>"
+
     "   </interface>"
     "</node>";
 
@@ -112,13 +113,15 @@ static void close_notification(GDBusConnection *conn, const gchar *sender,
     guint32 id;
     g_variant_get(params, "(u)", &id);
 
+    // TODO: return empty dbus error if note does not currently exist
+
     dequeue_note(id, CLOSE_REASON_CLOSED);
 
     g_dbus_method_invocation_return_value(invocation, NULL);
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
 
-static ServerInfo *server_info;
+ServerInfo *server_info;
 
 static void get_server_information(GDBusConnection *conn, const gchar *sender,
                                    const GVariant *params,
@@ -160,7 +163,9 @@ static void notify(GDBusConnection *conn, const gchar *sender,
 #endif
 
     {
-        GVariantIter *iter = g_variant_iter_new(params);
+        GVariantIter _iter;
+        GVariantIter *iter;
+        g_variant_iter_init(iter, params);
         GVariant *content;
 #if URGENCY
         GVariant *dict_value;
@@ -211,8 +216,6 @@ static void notify(GDBusConnection *conn, const gchar *sender,
             g_variant_unref(content);
             idx++;
         }
-
-        g_variant_iter_free(iter);
     }
 
     uint32_t n_id = replaces_id;
@@ -264,17 +267,19 @@ void signal_notification_closed(Note *n, const gchar *client,
         g_error_free(err);
 }
 
+#if ACTIONS
 void signal_action_invoked(Note *n, const gchar *client,
                            const char *ident) {
     GVariant *body = g_variant_new("(us)", n->id, ident);
     GError *err = NULL;
     g_dbus_connection_emit_signal(dbus_conn, client, FDN_PATH, FDN_IFAC,
-            "NotificationClosed", body, &err);
+            "ActionInvoked", body, &err);
 
     // TODO: Handle the error
     if (err != NULL)
         g_error_free(err);
 }
+#endif
 
 /**
  * Scaffolding.
@@ -336,7 +341,7 @@ static void on_name_lost(GDBusConnection *conn, const gchar *name,
  * The entry point to notlib.
  */
 
-extern void notlib_run(NoteCallbacks cbs, ServerInfo *info) {
+extern void run_dbus_loop() {
     GMainLoop *loop;
     guint owner_id;
 
@@ -350,9 +355,6 @@ extern void notlib_run(NoteCallbacks cbs, ServerInfo *info) {
                               on_name_acquired,
                               on_name_lost,
                               NULL, NULL);
-
-    callbacks = cbs;
-    server_info = info;
 
     loop = g_main_loop_new(NULL, FALSE);
     g_main_loop_run(loop);

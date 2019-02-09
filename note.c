@@ -32,7 +32,8 @@ extern Note *new_note(uint32_t id, char *appname,
 #if URGENCY
                       enum Urgency urgency,
 #endif
-                      int32_t timeout /* TODO: hints */) {
+                      Hints *hints,
+                      int32_t timeout) {
     Note *n = g_malloc(sizeof(Note));
 
     n->id      = id;
@@ -46,8 +47,69 @@ extern Note *new_note(uint32_t id, char *appname,
 #if URGENCY
     n->urgency = urgency;
 #endif
-    // TODO: hints
+    n->hints = hints;
     return n;
+}
+
+extern enum HintType get_hint_type(const Note *n, char *key) {
+    GVariant *v = g_variant_dict_lookup_value(n->hints->dict, key, NULL);
+    if (v == NULL) return HINT_TYPE_UNKNOWN;
+
+    const GVariantType *t = g_variant_get_type(v);
+    g_variant_unref(v);
+
+    if (g_variant_type_equal(t, G_VARIANT_TYPE_STRING)) {
+        return HINT_TYPE_STRING;
+    } else if (g_variant_type_equal(t, G_VARIANT_TYPE_BOOLEAN)) {
+        return HINT_TYPE_BOOLEAN;
+    } else if (g_variant_type_equal(t, G_VARIANT_TYPE_BYTE)) {
+        return HINT_TYPE_BYTE;
+    } else if (g_variant_type_equal(t, G_VARIANT_TYPE_INT32)) {
+        return HINT_TYPE_INT;
+    }
+    return HINT_TYPE_UNKNOWN;
+}
+
+extern int get_int_hint(const Note *n, char *key, int *out) {
+    GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
+            key, G_VARIANT_TYPE_INT32);
+    if (gv == NULL)
+        return 0;
+    *out = g_variant_get_int32(gv);
+    g_variant_unref(gv);
+    return 1;
+}
+
+extern int get_byte_hint(const Note *n, char *key, unsigned char *out) {
+    GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
+            key, G_VARIANT_TYPE_BYTE);
+    if (gv == NULL)
+        return 0;
+    *out = g_variant_get_byte(gv);
+    g_variant_unref(gv);
+    return 1;
+}
+
+extern int get_boolean_hint(const Note *n, char *key, int *out) {
+    GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
+                key, G_VARIANT_TYPE_BOOLEAN);
+    if (gv == NULL) {
+        return 0;
+    }
+    *out = g_variant_get_boolean(gv);
+    g_variant_unref(gv);
+    return 1;
+}
+
+extern int get_string_hint(const Note *n, char *key, char **out) {
+    size_t l;
+    GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
+            key, G_VARIANT_TYPE_STRING);
+    if (gv == NULL)
+        return 0;
+    *out = g_variant_dup_string(gv, &l);
+    g_variant_unref(gv);
+    return 1;
 }
 
 #if ACTIONS
@@ -70,7 +132,8 @@ extern void free_note(Note *n) {
     free_actions(n->actions);
 #endif
 
-    // TODO: hints
+    g_variant_dict_unref(n->hints->dict);
+    g_free(n->hints);
     g_free(n);
 }
 

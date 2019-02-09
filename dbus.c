@@ -161,10 +161,11 @@ static void notify(GDBusConnection *conn, const gchar *sender,
 #if URGENCY
     enum Urgency urgency = 1;
 #endif
+    Hints *hints = NULL;
 
     {
         GVariantIter _iter;
-        GVariantIter *iter;
+        GVariantIter *iter = &_iter;
         g_variant_iter_init(iter, params);
         GVariant *content;
 #if URGENCY
@@ -198,6 +199,8 @@ static void notify(GDBusConnection *conn, const gchar *sender,
                 break;
             case 6:
                 if (g_variant_is_of_type(content, G_VARIANT_TYPE_DICTIONARY)) {
+                    hints = malloc(sizeof(Hints));
+                    hints->dict = g_variant_dict_new(content);
 #if URGENCY
                     dict_value = g_variant_lookup_value(content, "urgency", G_VARIANT_TYPE_BYTE);
                     if (dict_value) {
@@ -205,7 +208,6 @@ static void notify(GDBusConnection *conn, const gchar *sender,
                         g_variant_unref(dict_value);
                     }
 #endif
-                    // TODO: support hints
                 }
                 break;
             case 7:
@@ -239,6 +241,7 @@ static void notify(GDBusConnection *conn, const gchar *sender,
 #if URGENCY
                           urgency,
 #endif
+                          hints,
                           timeout);
 
     enqueue_note(note, g_strdup(sender));

@@ -59,6 +59,8 @@ enum Urgency {
 };
 #endif
 
+typedef struct hints Hints;
+
 typedef struct {
     unsigned int id;
     char *appname;
@@ -73,8 +75,7 @@ typedef struct {
 #if URGENCY
     enum Urgency urgency;
 #endif
-
-    // TODO: hints
+    Hints *hints;
 } Note;
 
 typedef struct {
@@ -90,6 +91,32 @@ typedef struct {
 } ServerInfo;
 
 /* public functions */
+
+/*
+ * Hint accessors.
+ *
+ * Doesn't allow for every possible DBUS_TYPE_VARIANT, but covers
+ * the common cases.  If the hint value associated with "key" is not of
+ * the requested type, the type's obvious 'zero value' will be returned.
+ *
+ * For safety, the return value of get_string_hint() is a copy and must
+ * be freed by the caller.
+ */
+
+enum HintType {
+    HINT_TYPE_UNKNOWN = 0,
+    HINT_TYPE_INT = 1,
+    HINT_TYPE_BYTE = 2,
+    HINT_TYPE_BOOLEAN = 3,
+    HINT_TYPE_STRING = 4
+};
+
+extern enum HintType get_hint_type(const Note *n, char *key);
+
+extern int get_int_hint     (const Note *n, char *key, int *out);
+extern int get_byte_hint    (const Note *n, char *key, unsigned char *out);
+extern int get_boolean_hint (const Note *n, char *key, int *out);
+extern int get_string_hint  (const Note *n, char *key, char **out);
 
 /*
  * Main entry point.

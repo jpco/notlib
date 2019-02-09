@@ -38,6 +38,10 @@ enum CloseReason {
 extern NoteCallbacks callbacks;
 extern ServerInfo *server_info;
 
+struct hints {
+    GVariantDict *dict;
+};
+
 // queue.c
 
 void enqueue_note(Note *note, gchar *sender);
@@ -55,12 +59,12 @@ extern Note *new_note(uint32_t,     /* id */
 #if URGENCY
                       enum Urgency, /* urgency */
 #endif
+                      Hints *,      /* hints */
                       int32_t       /* timeout */
-                      /* TODO: hints */
                      );
 
 #if ACTIONS
-extern void free_actions(Actions *actions);
+extern void free_actions(Actions *);
 #endif
 extern void free_note(Note *);
 extern int32_t note_timeout(const Note *);

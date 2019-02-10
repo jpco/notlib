@@ -24,32 +24,32 @@
 #ifndef NOTLIB_H
 #define NOTLIB_H
 
-#define VERSION 0.2
+#define NL_VERSION 0.2
 
 /*
  * Optional features
  */
 
-#ifndef ACTIONS
-#define ACTIONS 1
+#ifndef NL_ACTIONS
+#define NL_ACTIONS 1
 #endif
 
-#ifndef URGENCY
-#define URGENCY 1
+#ifndef NL_URGENCY
+#define NL_URGENCY 1
 #endif
 
 // TODO: more optional features
 //  - ICON
 
-#if ACTIONS
+#if NL_ACTIONS
 typedef struct {
     char **actions;
     size_t count;
-} Actions;
+} NLActions;
 #endif
 
-#if URGENCY
-enum Urgency {
+#if NL_URGENCY
+enum NLUrgency {
     URG_NONE = -1,
     URG_MIN  =  0,
     URG_LOW  =  0,
@@ -59,7 +59,7 @@ enum Urgency {
 };
 #endif
 
-typedef struct hints Hints;
+typedef struct hints NLHints;
 
 typedef struct {
     unsigned int id;
@@ -68,27 +68,27 @@ typedef struct {
     char *body;
 
     int timeout;
-#if ACTIONS
-    Actions *actions;
+#if NL_ACTIONS
+    NLActions *actions;
 #endif
 
-#if URGENCY
-    enum Urgency urgency;
+#if NL_URGENCY
+    enum NLUrgency urgency;
 #endif
-    Hints *hints;
-} Note;
+    NLHints *hints;
+} NLNote;
 
 typedef struct {
-    void (*notify)  (const Note *);
-    void (*close)   (const Note *);  // Should this include CloseReason?
-    void (*replace) (const Note *);
-} NoteCallbacks;
+    void (*notify)  (const NLNote *);
+    void (*close)   (const NLNote *);  // Should this include CloseReason?
+    void (*replace) (const NLNote *);
+} NLNoteCallbacks;
 
 typedef struct {
     char *app_name;
     char *author;
     char *version;
-} ServerInfo;
+} NLServerInfo;
 
 /* public functions */
 
@@ -103,7 +103,7 @@ typedef struct {
  * be freed by the caller.
  */
 
-enum HintType {
+enum NLHintType {
     HINT_TYPE_UNKNOWN = 0,
     HINT_TYPE_INT = 1,
     HINT_TYPE_BYTE = 2,
@@ -111,12 +111,12 @@ enum HintType {
     HINT_TYPE_STRING = 4
 };
 
-extern enum HintType get_hint_type(const Note *n, char *key);
+extern enum NLHintType nl_get_hint_type(const NLNote *n, char *key);
 
-extern int get_int_hint     (const Note *n, char *key, int *out);
-extern int get_byte_hint    (const Note *n, char *key, unsigned char *out);
-extern int get_boolean_hint (const Note *n, char *key, int *out);
-extern int get_string_hint  (const Note *n, char *key, char **out);
+extern int nl_get_int_hint     (const NLNote *n, char *key, int *out);
+extern int nl_get_byte_hint    (const NLNote *n, char *key, unsigned char *out);
+extern int nl_get_boolean_hint (const NLNote *n, char *key, int *out);
+extern int nl_get_string_hint  (const NLNote *n, char *key, char **out);
 
 /*
  * Main entry point.
@@ -126,14 +126,14 @@ extern int get_string_hint  (const Note *n, char *key, char **out);
  *
  * TODO: allow client to provide information for GetServerInformation
  */
-extern void notlib_run(NoteCallbacks, ServerInfo*);
+extern void notlib_run(NLNoteCallbacks, NLServerInfo*);
 
-extern void close_note(unsigned int);
+extern void nl_close_note(unsigned int);
 
-#if ACTIONS
-// extern void invoke_action(unsigned int, char *);
-// char *action_keys(Note *);
-// char *action_name(Note *, char *);
+#if NL_ACTIONS
+// extern void nl_invoke_action(unsigned int, char *);
+// char *nl_action_keys(NLNote *);
+// char *nl_action_name(NLNote *, char *);
 #endif
 
 #endif

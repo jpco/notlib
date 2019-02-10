@@ -24,34 +24,34 @@
 #include "notlib.h"
 #include "_notlib_internal.h"
 
-extern Note *new_note(uint32_t id, char *appname,
-                      char *summary, char *body,
-#if ACTIONS
-                      Actions *actions,
+extern NLNote *new_note(uint32_t id, char *appname,
+                        char *summary, char *body,
+#if NL_ACTIONS
+                        NLActions *actions,
 #endif
-#if URGENCY
-                      enum Urgency urgency,
+#if NL_URGENCY
+                        enum NLUrgency urgency,
 #endif
-                      Hints *hints,
-                      int32_t timeout) {
-    Note *n = g_malloc(sizeof(Note));
+                        NLHints *hints,
+                        int32_t timeout) {
+    NLNote *n = g_malloc(sizeof(NLNote));
 
     n->id      = id;
     n->appname = appname;
     n->summary = summary;
     n->body    = body;
     n->timeout = timeout;
-#if ACTIONS
+#if NL_ACTIONS
     n->actions = actions;
 #endif
-#if URGENCY
+#if NL_URGENCY
     n->urgency = urgency;
 #endif
     n->hints = hints;
     return n;
 }
 
-extern enum HintType get_hint_type(const Note *n, char *key) {
+extern enum NLHintType get_hint_type(const NLNote *n, char *key) {
     GVariant *v = g_variant_dict_lookup_value(n->hints->dict, key, NULL);
     if (v == NULL) return HINT_TYPE_UNKNOWN;
 
@@ -70,7 +70,7 @@ extern enum HintType get_hint_type(const Note *n, char *key) {
     return HINT_TYPE_UNKNOWN;
 }
 
-extern int get_int_hint(const Note *n, char *key, int *out) {
+extern int get_int_hint(const NLNote *n, char *key, int *out) {
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_INT32);
     if (gv == NULL)
@@ -80,7 +80,7 @@ extern int get_int_hint(const Note *n, char *key, int *out) {
     return 1;
 }
 
-extern int get_byte_hint(const Note *n, char *key, unsigned char *out) {
+extern int get_byte_hint(const NLNote *n, char *key, unsigned char *out) {
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_BYTE);
     if (gv == NULL)
@@ -90,7 +90,7 @@ extern int get_byte_hint(const Note *n, char *key, unsigned char *out) {
     return 1;
 }
 
-extern int get_boolean_hint(const Note *n, char *key, int *out) {
+extern int get_boolean_hint(const NLNote *n, char *key, int *out) {
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
                 key, G_VARIANT_TYPE_BOOLEAN);
     if (gv == NULL) {
@@ -101,7 +101,7 @@ extern int get_boolean_hint(const Note *n, char *key, int *out) {
     return 1;
 }
 
-extern int get_string_hint(const Note *n, char *key, char **out) {
+extern int get_string_hint(const NLNote *n, char *key, char **out) {
     size_t l;
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_STRING);
@@ -112,8 +112,8 @@ extern int get_string_hint(const Note *n, char *key, char **out) {
     return 1;
 }
 
-#if ACTIONS
-extern void free_actions(Actions *a) {
+#if NL_ACTIONS
+extern void free_actions(NLActions *a) {
     if (!a) return;
 
     g_strfreev(a->actions);
@@ -121,14 +121,14 @@ extern void free_actions(Actions *a) {
 }
 #endif
 
-extern void free_note(Note *n) {
+extern void free_note(NLNote *n) {
     if (!n) return;
 
     g_free(n->appname);
     g_free(n->summary);
     g_free(n->body);
 
-#if ACTIONS
+#if NL_ACTIONS
     free_actions(n->actions);
 #endif
 
@@ -137,7 +137,7 @@ extern void free_note(Note *n) {
     g_free(n);
 }
 
-extern int32_t note_timeout(const Note *n) {
+extern int32_t note_timeout(const NLNote *n) {
     if (n->timeout >= 0)
         return n->timeout;
 

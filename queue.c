@@ -26,7 +26,7 @@
 #include "_notlib_internal.h"
 
 typedef struct qn {
-    Note *n;
+    NLNote *n;
     gint64 exp;
     gchar *client;
 
@@ -36,7 +36,7 @@ typedef struct qn {
 
 static qnode *note_queue_start = NULL;
 static qnode *note_queue_end = NULL;
-NoteCallbacks callbacks;
+NLNoteCallbacks callbacks;
 
 static void dequeue_note_by_node(qnode *qn, enum CloseReason reason) {
     if (qn->prev != NULL) {
@@ -84,7 +84,7 @@ static gboolean wakeup_queue(gpointer p) {
     return FALSE;
 }
 
-static void setup_qnode(qnode *qn, Note *n, gchar *client) {
+static void setup_qnode(qnode *qn, NLNote *n, gchar *client) {
     qn->n = n;
     qn->client = client;
 
@@ -98,7 +98,7 @@ static void setup_qnode(qnode *qn, Note *n, gchar *client) {
     g_timeout_add(timeout_millis, wakeup_queue, NULL);
 }
 
-static int replace_note(Note *n, gchar *client) {
+static int replace_note(NLNote *n, gchar *client) {
     qnode *qn;
     for (qn = note_queue_start; qn; qn = qn->next) {
         if (qn->n->id == n->id) {
@@ -112,7 +112,7 @@ static int replace_note(Note *n, gchar *client) {
     return FALSE;
 }
 
-extern void enqueue_note(Note *n, gchar *client) {
+extern void enqueue_note(NLNote *n, gchar *client) {
     if (n->id && replace_note(n, client))
         return;
 
@@ -131,5 +131,6 @@ extern void enqueue_note(Note *n, gchar *client) {
     }
     setup_qnode(new_qn, n, client);
 
-    callbacks.notify(n);
+    if (callbacks.notify != NULL)
+        callbacks.notify(n);
 }

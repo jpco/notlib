@@ -35,8 +35,8 @@ enum CloseReason {
     CLOSE_REASON_MAX        = 4
 };
 
-extern NoteCallbacks callbacks;
-extern ServerInfo *server_info;
+extern NLNoteCallbacks callbacks;
+extern NLServerInfo *server_info;
 
 struct hints {
     GVariantDict *dict;
@@ -44,35 +44,35 @@ struct hints {
 
 // queue.c
 
-void enqueue_note(Note *note, gchar *sender);
+void enqueue_note(NLNote *note, gchar *sender);
 void dequeue_note(uint32_t id, enum CloseReason);
 
 // note.c
 
-extern Note *new_note(uint32_t,     /* id */
-                      char *,       /* app name */
-                      char *,       /* summary */
-                      char *,       /* body */
-#if ACTIONS
-                      Actions *,    /* actions */
+extern NLNote *new_note(uint32_t,     /* id */
+                        char *,       /* app name */
+                        char *,       /* summary */
+                        char *,       /* body */
+#if NL_ACTIONS
+                        NLActions *,    /* actions */
 #endif
-#if URGENCY
-                      enum Urgency, /* urgency */
+#if NL_URGENCY
+                        enum NLUrgency, /* urgency */
 #endif
-                      Hints *,      /* hints */
-                      int32_t       /* timeout */
-                     );
+                        NLHints *,      /* hints */
+                        int32_t       /* timeout */
+                       );
 
-#if ACTIONS
-extern void free_actions(Actions *);
+#if NL_ACTIONS
+extern void free_actions(NLActions *);
 #endif
-extern void free_note(Note *);
-extern int32_t note_timeout(const Note *);
+extern void free_note(NLNote *);
+extern int32_t note_timeout(const NLNote *);
 
 // dbus.c
 
-extern void signal_notification_closed(Note *, const gchar *, enum CloseReason);
-extern void signal_action_invoked(Note *, const gchar *, const char *);
+extern void signal_notification_closed(NLNote *, const gchar *, enum CloseReason);
+extern void signal_action_invoked(NLNote *, const gchar *, const char *);
 extern void run_dbus_loop();
 
 #endif  // _NOTLIB_INTERNAL_H

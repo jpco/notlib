@@ -31,11 +31,11 @@
 #include "notlib.h"
 #include "_notlib_internal.h"
 
-extern void close_note(unsigned int id) {
+extern void nl_close_note(unsigned int id) {
     dequeue_note(id, CLOSE_REASON_DISMISSED);
 }
 
-extern void notlib_run(NoteCallbacks cbs, ServerInfo *info) {
+extern void notlib_run(NLNoteCallbacks cbs, NLServerInfo *info) {
     callbacks = cbs;
     server_info = info;
     run_dbus_loop();

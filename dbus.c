@@ -90,7 +90,7 @@ static void get_capabilities(GDBusConnection *conn, const gchar *sender,
     GVariant *value;
 
     builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
-#if ACTIONS
+#if NL_ACTIONS
     g_variant_builder_add(builder, "s", "actions");
 #endif
     g_variant_builder_add(builder, "s", "body");
@@ -121,7 +121,7 @@ static void close_notification(GDBusConnection *conn, const gchar *sender,
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
 
-ServerInfo *server_info;
+NLServerInfo *server_info;
 
 static void get_server_information(GDBusConnection *conn, const gchar *sender,
                                    const GVariant *params,
@@ -154,21 +154,21 @@ static void notify(GDBusConnection *conn, const gchar *sender,
     uint32_t replaces_id = 0;
     char *summary = NULL;
     char *body = NULL;
-#if ACTIONS
-    Actions *actions = g_malloc0(sizeof(Actions));
+#if NL_ACTIONS
+    NLActions *actions = g_malloc0(sizeof(NLActions));
 #endif
     int32_t timeout = -1;
-#if URGENCY
-    enum Urgency urgency = 1;
+#if NL_URGENCY
+    enum NLUrgency urgency = 1;
 #endif
-    Hints *hints = NULL;
+    NLHints *hints = NULL;
 
     {
         GVariantIter _iter;
         GVariantIter *iter = &_iter;
         g_variant_iter_init(iter, params);
         GVariant *content;
-#if URGENCY
+#if NL_URGENCY
         GVariant *dict_value;
 #endif
         int idx = 0;
@@ -192,16 +192,16 @@ static void notify(GDBusConnection *conn, const gchar *sender,
                     body = g_variant_dup_string(content, NULL);
                 break;
             case 5:
-#if ACTIONS
+#if NL_ACTIONS
                 if (g_variant_is_of_type(content, G_VARIANT_TYPE_STRING_ARRAY))
                     actions->actions = g_variant_dup_strv(content, &(actions->count));
 #endif
                 break;
             case 6:
                 if (g_variant_is_of_type(content, G_VARIANT_TYPE_DICTIONARY)) {
-                    hints = malloc(sizeof(Hints));
+                    hints = malloc(sizeof(NLHints));
                     hints->dict = g_variant_dict_new(content);
-#if URGENCY
+#if NL_URGENCY
                     dict_value = g_variant_lookup_value(content, "urgency", G_VARIANT_TYPE_BYTE);
                     if (dict_value) {
                         urgency = g_variant_get_byte(dict_value);
@@ -227,22 +227,22 @@ static void notify(GDBusConnection *conn, const gchar *sender,
         else n_id = id;
     }
 
-#if ACTIONS
+#if NL_ACTIONS
     if (actions->count < 1) {
         free_actions(actions);
         actions = NULL;
     }
 #endif
 
-    Note *note = new_note(n_id, appname, summary, body,
-#if ACTIONS
-                          actions,
+    NLNote *note = new_note(n_id, appname, summary, body,
+#if NL_ACTIONS
+                            actions,
 #endif
-#if URGENCY
-                          urgency,
+#if NL_URGENCY
+                            urgency,
 #endif
-                          hints,
-                          timeout);
+                            hints,
+                            timeout);
 
     enqueue_note(note, g_strdup(sender));
 
@@ -255,7 +255,7 @@ static void notify(GDBusConnection *conn, const gchar *sender,
  * DBus signal logic
  */
 
-void signal_notification_closed(Note *n, const gchar *client,
+void signal_notification_closed(NLNote *n, const gchar *client,
                                 enum CloseReason reason) {
     if (reason < CLOSE_REASON_MIN || reason > CLOSE_REASON_MAX)
         reason = CLOSE_REASON_UNKNOWN;
@@ -270,8 +270,8 @@ void signal_notification_closed(Note *n, const gchar *client,
         g_error_free(err);
 }
 
-#if ACTIONS
-void signal_action_invoked(Note *n, const gchar *client,
+#if NL_ACTIONS
+void signal_action_invoked(NLNote *n, const gchar *client,
                            const char *ident) {
     GVariant *body = g_variant_new("(us)", n->id, ident);
     GError *err = NULL;

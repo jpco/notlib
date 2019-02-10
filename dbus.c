@@ -216,7 +216,7 @@ static void notify(GDBusConnection *conn, const gchar *sender,
                 break;
             }
             g_variant_unref(content);
-            idx++;
+            ++idx;
         }
     }
 

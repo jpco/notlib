@@ -51,7 +51,7 @@ extern NLNote *new_note(uint32_t id, char *appname,
     return n;
 }
 
-extern enum NLHintType get_hint_type(const NLNote *n, char *key) {
+extern enum NLHintType nl_get_hint_type(const NLNote *n, char *key) {
     GVariant *v = g_variant_dict_lookup_value(n->hints->dict, key, NULL);
     if (v == NULL) return HINT_TYPE_UNKNOWN;
 
@@ -70,7 +70,7 @@ extern enum NLHintType get_hint_type(const NLNote *n, char *key) {
     return HINT_TYPE_UNKNOWN;
 }
 
-extern int get_int_hint(const NLNote *n, char *key, int *out) {
+extern int nl_get_int_hint(const NLNote *n, char *key, int *out) {
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_INT32);
     if (gv == NULL)
@@ -80,7 +80,7 @@ extern int get_int_hint(const NLNote *n, char *key, int *out) {
     return 1;
 }
 
-extern int get_byte_hint(const NLNote *n, char *key, unsigned char *out) {
+extern int nl_get_byte_hint(const NLNote *n, char *key, unsigned char *out) {
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_BYTE);
     if (gv == NULL)
@@ -90,7 +90,7 @@ extern int get_byte_hint(const NLNote *n, char *key, unsigned char *out) {
     return 1;
 }
 
-extern int get_boolean_hint(const NLNote *n, char *key, int *out) {
+extern int nl_get_boolean_hint(const NLNote *n, char *key, int *out) {
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
                 key, G_VARIANT_TYPE_BOOLEAN);
     if (gv == NULL) {
@@ -101,7 +101,7 @@ extern int get_boolean_hint(const NLNote *n, char *key, int *out) {
     return 1;
 }
 
-extern int get_string_hint(const NLNote *n, char *key, char **out) {
+extern int nl_get_string_hint(const NLNote *n, char *key, char **out) {
     size_t l;
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_STRING);

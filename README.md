@@ -2,7 +2,7 @@
 
 A simple C library for building notification servers.  Not ready for the limelight just yet.
 
-Notlib depends on gio/gobject/glib (in particular, the `dbus-glib` package on arch linux, or equivalents in other environments) for its dbus implementation and main loop; the intent is to keep these dependencies as small as possible to make it simple to swap them out if desired.
+Notlib depends on gio/gobject/glib (in particular, the `dbus-glib` package on archlinux, or equivalents in other environments) for its dbus implementation and main loop.
 
 
 ## Installation
@@ -22,51 +22,115 @@ and then do whatever you want with the produced file `libnotlib.a`.
 
 ## Features
 
-There are currently two optional features, which may be enabled or disabled by setting the build flags `-D${FEATURE}=0` or `-D${FEATURE}=1`.  These features are:
+There are currently two optional features, which may be enabled or disabled by setting the build flags `-D${NL_FEATURE}=0` or `-D${NL_FEATURE}=1`.  These features are:
 
- - ACTIONS: Controls whether the server has the "actions" capability.
- - URGENCY: Controls whether notlib specially handles the "urgency" hint.  If disabled, notlib will handle urgency like every other hint.
+ - `NL_ACTIONS`: Controls whether the server reports having the "actions" capability.
+ - `NL_URGENCY`: Controls whether notlib specially handles the "urgency" hint.  If disabled, notlib will handle urgency like any other hint.
 
 
 ## API
 
-The notlib API is extremely simple.  There are two structs,
+The notlib API is extremely simple.  The primary data type in notlib is `NLNote`:
 
 ```c
 typedef struct {
-    void (*notify)  (const Note *);
-    void (*close)   (const Note *);
-    void (*replace) (const Note *);
-} NoteCallbacks;
+    unsigned int id;
+    char *appname;
+    char *summary;
+    char *body;
+
+    int timeout;
+#if NL_ACTIONS
+    NLActions *actions;
+#endif
+
+#if NL_URGENCY
+    enum NLUrgency urgency;
+#endif
+    NLHints *hints;
+} NLNote;
+```
+
+Aside from the `hints` field which has special accessor functions described below, these fields are regular C types, which may be accessed in regular C ways.
+
+To invoke notlib, there are two structs,
+
+```c
+typedef struct {
+    void (*notify)  (const NLNote *);
+    void (*close)   (const NLNote *);
+    void (*replace) (const NLNote *);
+} NLNoteCallbacks;
 
 typedef struct {
     char *app_name;
     char *author;
     char *version;
-} ServerInfo;
+} NLServerInfo;
 ```
 
 which users may pass to the function
 
 ```c
-void notlib_run(NoteCallbacks, ServerInfo *);
+void notlib_run(NLNoteCallbacks, NLServerInfo *);
 ```
 
-This function will run for the duration of the program.  Notlib owns the lifetime of the `const Note *`s passed to the callback functions; to free or modify them is an error.
+This function will run for the duration of the program.  Notlib owns the lifetime of the `const Note *`s passed to the callback functions.
 
-The threading semantics of notlib are undefined.
+### Hints
+
+Because D-Bus are polymorphic (that is, `DBUS_TYPE_VARIANT`), there are a number of helpers to access them.  Notlib currently supports generic hints of these types:
+
+```c
+enum NLHintType {
+    HINT_TYPE_UNKNOWN = 0,
+    HINT_TYPE_INT = 1,
+    HINT_TYPE_BYTE = 2,
+    HINT_TYPE_BOOLEAN = 3,
+    HINT_TYPE_STRING = 4
+};
+```
+
+There are type-specific functions to access hints, which return true values if the `NLNote` has a hint with that key and type.
+
+```c
+extern int nl_get_int_hint    (const NLNote *n, const char *key, int *out);
+extern int nl_get_byte_hint   (const NLNote *n, const char *key, unsigned char *out);
+extern int nl_get_boolean_hint(const NLNote *n, const char *key, int *out);
+extern int nl_get_string_hint (const NLNote *n, const char *key, const char **out);
+```
+
+These functions populate their `out` params with the requested hint values.
+
+There are also "generic" accessors,
+
+```c
+extern enum NLHintType nl_get_hint_type(const NLNote *n, const char *key);
+extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out);
+```
+
+the latter of which populates a pointer to a tagged union:
+
+```c
+typedef struct {
+    enum NLHintType type;
+    union {
+        int i;
+        unsigned char byte;
+        int bl;
+        const char *str;
+    } d;
+} NLHint;
+```
 
 
 ## TODO
 
  - Several more optional features: icon, etc.
  - Fix "replaces ID of nonexistent note" behavior
- - Hints in general.
  - A standard `close()` function in the API.
  - Invoking actions.
  - Client-configurable responses to the `GetCapabilities` method.
  - A clearer (documented) idea of threading: does a long-running callback block receipt of further notifications?
  - Configurable default timeout.
  - Proper handling of errors that may arise.
- - As much as possible, allowing clients to keep from having to interact with GLib if they don't want to.
-    - In particular, functions to copy/access values inside of notes

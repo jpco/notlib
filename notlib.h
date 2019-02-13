@@ -61,6 +61,24 @@ enum NLUrgency {
 
 typedef struct hints NLHints;
 
+enum NLHintType {
+    HINT_TYPE_UNKNOWN = 0,
+    HINT_TYPE_INT = 1,
+    HINT_TYPE_BYTE = 2,
+    HINT_TYPE_BOOLEAN = 3,
+    HINT_TYPE_STRING = 4
+};
+
+typedef struct {
+    enum NLHintType type;
+    union {
+        int i;
+        unsigned char byte;
+        int bl;
+        const char *str;
+    } d;
+} NLHint;
+
 typedef struct {
     unsigned int id;
     char *appname;
@@ -93,30 +111,19 @@ typedef struct {
 /* public functions */
 
 /*
- * Hint accessors.
- *
- * Doesn't allow for every possible DBUS_TYPE_VARIANT, but covers
- * the common cases.  If the hint value associated with "key" is not of
- * the requested type, the type's obvious 'zero value' will be returned.
- *
- * For safety, the return value of get_string_hint() is a copy and must
- * be freed by the caller.
+ * Hint accessors. These don't allow for every possible DBUS_TYPE_VARIANT, but
+ * they do cover the common cases.
  */
 
-enum NLHintType {
-    HINT_TYPE_UNKNOWN = 0,
-    HINT_TYPE_INT = 1,
-    HINT_TYPE_BYTE = 2,
-    HINT_TYPE_BOOLEAN = 3,
-    HINT_TYPE_STRING = 4
-};
+// Type-generic hint accessors
+extern enum NLHintType nl_get_hint_type(const NLNote *n, const char *key);
+extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out);
 
-extern enum NLHintType nl_get_hint_type(const NLNote *n, char *key);
-
-extern int nl_get_int_hint     (const NLNote *n, char *key, int *out);
-extern int nl_get_byte_hint    (const NLNote *n, char *key, unsigned char *out);
-extern int nl_get_boolean_hint (const NLNote *n, char *key, int *out);
-extern int nl_get_string_hint  (const NLNote *n, char *key, char **out);
+// Type-specific hint accessors
+extern int nl_get_int_hint    (const NLNote *n, const char *key, int *out);
+extern int nl_get_byte_hint   (const NLNote *n, const char *key, unsigned char *out);
+extern int nl_get_boolean_hint(const NLNote *n, const char *key, int *out);
+extern int nl_get_string_hint (const NLNote *n, const char *key, const char **out);
 
 /*
  * Main entry point.

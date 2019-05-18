@@ -66,20 +66,21 @@ typedef struct {
     char *app_name;
     char *author;
     char *version;
+    char **capabilities;
 } NLServerInfo;
 ```
 
 which users may pass to the function
 
 ```c
-void notlib_run(NLNoteCallbacks, NLServerInfo *);
+void notlib_run(NLNoteCallbacks, char **capabilities, NLServerInfo *);
 ```
 
 This function will run for the duration of the program.  Notlib owns the lifetime of the `const Note *`s passed to the callback functions.
 
 ### Hints
 
-Because D-Bus are polymorphic (that is, `DBUS_TYPE_VARIANT`), there are a number of helpers to access them.  Notlib currently supports generic hints of these types:
+Because notification hints are polymorphic (that is, `DBUS_TYPE_VARIANT`), there are a number of helpers to access them.  Notlib currently supports generic hints of these types:
 
 ```c
 enum NLHintType {
@@ -128,9 +129,7 @@ typedef struct {
 
  - Several more optional features: icon, etc.
  - Fix "replaces ID of nonexistent note" behavior
- - A standard `close()` function in the API.
  - Invoking actions.
- - Client-configurable responses to the `GetCapabilities` method.
  - A clearer (documented) idea of threading: does a long-running callback block receipt of further notifications?
  - Configurable default timeout.
  - Proper handling of errors that may arise.

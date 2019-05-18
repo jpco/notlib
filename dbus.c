@@ -83,6 +83,8 @@ static const char *dbus_introspection_xml =
  * DBus method call logic
  */
 
+char **server_capabilities;
+
 static void get_capabilities(GDBusConnection *conn, const gchar *sender,
                              const GVariant *params,
                              GDBusMethodInvocation *invocation) {
@@ -90,15 +92,13 @@ static void get_capabilities(GDBusConnection *conn, const gchar *sender,
     GVariant *value;
 
     builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
-#if NL_ACTIONS
-    g_variant_builder_add(builder, "s", "actions");
-#endif
-    g_variant_builder_add(builder, "s", "body");
-    /*
-    TODO: what to do about these?
-    g_variant_builder_add(builder, "s", "body-hyperlinks");
-    g_variant_builder_add(builder, "s", "body-markup");
-    */
+
+    char **cap;
+    for (cap = server_capabilities;
+            cap != NULL && *cap != NULL;
+            cap++) {
+        g_variant_builder_add(builder, "s", *cap);
+    }
 
     value = g_variant_new("(as)", builder);
     g_variant_builder_unref(builder);

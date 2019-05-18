@@ -37,6 +37,7 @@ enum CloseReason {
 
 extern NLNoteCallbacks callbacks;
 extern NLServerInfo *server_info;
+extern char **server_capabilities;
 
 struct hints {
     GVariantDict *dict;

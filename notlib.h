@@ -106,6 +106,7 @@ typedef struct {
     char *app_name;
     char *author;
     char *version;
+    char **capabilities;
 } NLServerInfo;
 
 /* public functions */
@@ -133,7 +134,7 @@ extern int nl_get_string_hint (const NLNote *n, const char *key, const char **ou
  *
  * TODO: allow client to provide information for GetServerInformation
  */
-extern void notlib_run(NLNoteCallbacks, NLServerInfo*);
+extern void notlib_run(NLNoteCallbacks, char **, NLServerInfo*);
 
 extern void nl_close_note(unsigned int);
 

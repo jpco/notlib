@@ -152,9 +152,15 @@ extern void free_note(NLNote *n) {
     g_free(n);
 }
 
+static int32_t dto = 5000;
+
+extern void nl_set_default_timeout(unsigned int new) {
+    dto = (int32_t) new;
+}
+
 extern int32_t note_timeout(const NLNote *n) {
     if (n->timeout >= 0)
         return n->timeout;
 
-    return 5000;  // TODO: make this configurable
+    return dto;
 }

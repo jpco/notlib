@@ -131,5 +131,4 @@ typedef struct {
  - Fix "replaces ID of nonexistent note" behavior
  - Invoking actions.
  - A clearer (documented) idea of threading: does a long-running callback block receipt of further notifications?
- - Configurable default timeout.
  - Proper handling of errors that may arise.

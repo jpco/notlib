@@ -127,16 +127,14 @@ extern int nl_get_boolean_hint(const NLNote *n, const char *key, int *out);
 extern int nl_get_string_hint (const NLNote *n, const char *key, const char **out);
 
 /*
- * Main entry point.
- *
+ * Main entry point(s).
  * TODO: describe semantics of how the callbacks get called
  * (e.g., concurrency? one-at-a-time? what's the deal?)
- *
- * TODO: allow client to provide information for GetServerInformation
  */
 extern void notlib_run(NLNoteCallbacks, char **, NLServerInfo*);
 
 extern void nl_close_note(unsigned int);
+extern void nl_set_default_timeout(unsigned int);
 
 #if NL_ACTIONS
 // extern void nl_invoke_action(unsigned int, char *);

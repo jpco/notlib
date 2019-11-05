@@ -119,6 +119,7 @@ typedef struct {
 // Type-generic hint accessors
 extern enum NLHintType nl_get_hint_type(const NLNote *n, const char *key);
 extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out);
+extern char *nl_get_hint_as_string(const NLNote *n, const char *key);
 
 // Type-specific hint accessors
 extern int nl_get_int_hint    (const NLNote *n, const char *key, int *out);

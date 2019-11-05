@@ -107,10 +107,11 @@ There are also "generic" accessors,
 
 ```c
 extern enum NLHintType nl_get_hint_type(const NLNote *n, const char *key);
+extern char *nl_get_hint_as_string(const NLNote *n, const char *key);
 extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out);
 ```
 
-the latter of which populates a pointer to a tagged union:
+the last of which populates a pointer to a tagged union:
 
 ```c
 typedef struct {

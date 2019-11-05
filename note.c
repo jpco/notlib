@@ -79,6 +79,16 @@ extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out) {
     return 1;
 }
 
+extern char *nl_get_hint_as_string(const NLNote *n, const char *key) {
+    GVariant *gv = g_variant_dict_lookup_value(n->hints->dict, key, NULL);
+    if (gv == NULL) return NULL;
+
+    char *out = g_variant_print(gv, FALSE);
+
+    g_variant_unref(gv);
+    return out;
+}
+
 extern enum NLHintType nl_get_hint_type(const NLNote *n, const char *key) {
     NLHint h;
     nl_get_hint(n, key, &h);

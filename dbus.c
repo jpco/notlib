@@ -262,7 +262,7 @@ void signal_notification_closed(NLNote *n, const gchar *client,
 
     GVariant *body = g_variant_new("(uu)", n->id, reason);
     GError *err = NULL;
-    g_dbus_connection_emit_signal(dbus_conn, client, FDN_PATH, FDN_IFAC,
+    g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,
             "NotificationClosed", body, &err);
 
     // TODO: Handle the error
@@ -275,7 +275,7 @@ void signal_action_invoked(NLNote *n, const gchar *client,
                            const char *ident) {
     GVariant *body = g_variant_new("(us)", n->id, ident);
     GError *err = NULL;
-    g_dbus_connection_emit_signal(dbus_conn, client, FDN_PATH, FDN_IFAC,
+    g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,
             "ActionInvoked", body, &err);
 
     // TODO: Handle the error

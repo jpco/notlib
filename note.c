@@ -80,10 +80,17 @@ extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out) {
 }
 
 extern char *nl_get_hint_as_string(const NLNote *n, const char *key) {
-    GVariant *gv = g_variant_dict_lookup_value(n->hints->dict, key, NULL);
-    if (gv == NULL) return NULL;
+    char *out;
+    GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
+            key, G_VARIANT_TYPE_STRING);
 
-    char *out = g_variant_print(gv, FALSE);
+    if (gv != NULL) {
+        out = g_variant_dup_string(gv, NULL);
+    } else {
+        gv = g_variant_dict_lookup_value(n->hints->dict, key, NULL);
+        if (gv == NULL) return NULL;
+        out = g_variant_print(gv, FALSE);
+    }
 
     g_variant_unref(gv);
     return out;

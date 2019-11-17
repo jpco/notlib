@@ -172,5 +172,10 @@ extern int32_t note_timeout(const NLNote *n) {
     if (n->timeout >= 0)
         return n->timeout;
 
+#if NL_URGENCY
+    if (n->urgency == URG_CRIT)
+        return 0;
+#endif
+
     return dto;
 }

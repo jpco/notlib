@@ -20,6 +20,9 @@
 #ifndef _NOTLIB_INTERNAL_H
 #define _NOTLIB_INTERNAL_H
 
+#include <glib.h>
+#include "notlib.h"
+
 #define FDN_PATH "/org/freedesktop/Notifications"
 #define FDN_IFAC "org.freedesktop.Notifications"
 #define FDN_NAME "org.freedesktop.Notifications"
@@ -47,6 +50,11 @@ struct hints {
 
 void enqueue_note(NLNote *note, gchar *sender);
 void dequeue_note(uint32_t id, enum CloseReason);
+
+// idrange.c
+
+extern void claim_id(uint32_t);
+extern uint32_t get_unclaimed_id();
 
 // note.c
 

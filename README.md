@@ -129,7 +129,6 @@ typedef struct {
 ## TODO
 
  - Several more optional features: icon, etc.
- - Fix "replaces ID of nonexistent note" behavior
  - Invoking actions.
  - A clearer (documented) idea of threading: does a long-running callback block receipt of further notifications?
  - Proper handling of errors that may arise.

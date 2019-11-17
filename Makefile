@@ -9,8 +9,8 @@ LIBFULL  = ${LIBNAME}.${MAJOR}.${MINOR}
 
 INCLUDE = notlib.h
 HSRC    = _notlib_internal.h
-CSRC    = dbus.c note.c queue.c notlib.c
-OBJS    = dbus.o note.o queue.o notlib.o
+CSRC    = dbus.c note.c queue.c notlib.c idrange.c
+OBJS    = dbus.o note.o queue.o notlib.o idrange.o
 
 DEPS     = gio-2.0 gobject-2.0 glib-2.0
 LIBS     = $(shell pkg-config --libs ${DEPS})
@@ -28,7 +28,6 @@ ${LIBFULL} : ${OBJS} Makefile
 	install -m 644 ${INCLUDE} build/include
 	mv -f ${LIBFULL} ${LIBMAJOR} ${LIBNAME} build/lib
 
-
 static	: ${OBJS} Makefile
 	ar rcs libnotlib.a ${OBJS}
 
@@ -36,12 +35,11 @@ install : ${LIBFULL}
 	mkdir -p $(addprefix /usr/local/, src lib include)
 	cp -r $(wildcard build/*) /usr/local
 
-
 clean :
 	rm -r ${OBJS} libnotlib.a build/
 
-
-dbus.o      : dbus.c   notlib.h _notlib_internal.h
-notlib.o    : notlib.c notlib.h _notlib_internal.h
-note.o      : note.c   notlib.h _notlib_internal.h
-queue.o     : queue.c  notlib.h _notlib_internal.h
+dbus.o      : dbus.c    notlib.h _notlib_internal.h
+notlib.o    : notlib.c  notlib.h _notlib_internal.h
+note.o      : note.c    notlib.h _notlib_internal.h
+queue.o     : queue.c   notlib.h _notlib_internal.h
+idrange.o   : idrange.c notlib.h _notlib_internal.h

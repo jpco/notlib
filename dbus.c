@@ -145,8 +145,6 @@ static void get_server_information(GDBusConnection *conn, const gchar *sender,
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
 
-static unsigned int id = 0;
-
 static void notify(GDBusConnection *conn, const gchar *sender,
                    GVariant *params,
                    GDBusMethodInvocation *invocation) {
@@ -220,11 +218,12 @@ static void notify(GDBusConnection *conn, const gchar *sender,
         }
     }
 
-    uint32_t n_id = replaces_id;
-    if (n_id == 0) {
-        ++id;
-        if (id == 0) n_id = ++id;
-        else n_id = id;
+    uint32_t n_id;
+    if (replaces_id != 0) {
+        claim_id(replaces_id);
+        n_id = replaces_id;
+    } else {
+        n_id = get_unclaimed_id();
     }
 
 #if NL_ACTIONS

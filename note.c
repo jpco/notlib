@@ -52,6 +52,9 @@ extern NLNote *new_note(uint32_t id, char *appname,
 }
 
 extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out) {
+    if (n == NULL)
+        return 0;
+
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict, key, NULL);
     if (gv == NULL) return 0;
 
@@ -81,6 +84,9 @@ extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out) {
 
 extern char *nl_get_hint_as_string(const NLNote *n, const char *key) {
     char *out;
+    if (n == NULL)
+        return NULL;
+
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_STRING);
 
@@ -98,11 +104,14 @@ extern char *nl_get_hint_as_string(const NLNote *n, const char *key) {
 
 extern enum NLHintType nl_get_hint_type(const NLNote *n, const char *key) {
     NLHint h;
-    nl_get_hint(n, key, &h);
+    if (!nl_get_hint(n, key, &h))
+        return HINT_TYPE_UNKNOWN;
     return h.type;
 }
 
 extern int nl_get_int_hint(const NLNote *n, const char *key, int *out) {
+    if (n == NULL)
+        return 0;
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_INT32);
     if (gv == NULL)
@@ -113,6 +122,8 @@ extern int nl_get_int_hint(const NLNote *n, const char *key, int *out) {
 }
 
 extern int nl_get_byte_hint(const NLNote *n, const char *key, unsigned char *out) {
+    if (n == NULL)
+        return 0;
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_BYTE);
     if (gv == NULL)
@@ -123,6 +134,8 @@ extern int nl_get_byte_hint(const NLNote *n, const char *key, unsigned char *out
 }
 
 extern int nl_get_boolean_hint(const NLNote *n, const char *key, int *out) {
+    if (n == NULL)
+        return 0;
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
                 key, G_VARIANT_TYPE_BOOLEAN);
     if (gv == NULL) {
@@ -134,6 +147,9 @@ extern int nl_get_boolean_hint(const NLNote *n, const char *key, int *out) {
 }
 
 extern int nl_get_string_hint(const NLNote *n, const char *key, const char **out) {
+    if (n == NULL)
+        return 0;
+
     size_t l;
     GVariant *gv = g_variant_dict_lookup_value(n->hints->dict,
             key, G_VARIANT_TYPE_STRING);

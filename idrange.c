@@ -26,9 +26,7 @@
  * space.  This file makes that happen.
  */
 
-#include <stdlib.h>
 #include <stdint.h>
-#include <stdio.h>
 
 #include "_notlib_internal.h"
 
@@ -48,7 +46,7 @@ extern void claim_id(uint32_t n) {
         return;
 
     if (r == NULL) {
-        r = malloc(sizeof(range));
+        r = ealloc(sizeof(range));
         r->min = n;
         r->max = n;
         r->next = NULL;
@@ -58,7 +56,7 @@ extern void claim_id(uint32_t n) {
     range *cr, *prevr = NULL;
     for (cr = r; cr != NULL; prevr = cr, cr = cr->next) {
         if (n < cr->min - 1) {
-            range *nr = malloc(sizeof(range));
+            range *nr = ealloc(sizeof(range));
             nr->min = n;
             nr->max = n;
             nr->next = cr;
@@ -84,7 +82,7 @@ extern void claim_id(uint32_t n) {
             return;
         }
     }
-    range *nr = malloc(sizeof(range));
+    range *nr = ealloc(sizeof(range));
     nr->min = n;
     nr->max = n;
     nr->next = NULL;

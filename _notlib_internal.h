@@ -21,6 +21,7 @@
 #define _NOTLIB_INTERNAL_H
 
 #include <glib.h>
+#include <stdio.h>
 #include "notlib.h"
 
 #define FDN_PATH "/org/freedesktop/Notifications"
@@ -28,6 +29,8 @@
 #define FDN_NAME "org.freedesktop.Notifications"
 
 #define DBUS_VERSION "1.2"
+
+extern void *ealloc(size_t);
 
 enum CloseReason {
     CLOSE_REASON_MIN        = 1,

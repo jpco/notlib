@@ -31,6 +31,15 @@
 #include "notlib.h"
 #include "_notlib_internal.h"
 
+extern void *ealloc(size_t n) {
+    void *r;
+    if ((r = malloc(n)) == NULL) {
+        perror("malloc");
+        exit(1);
+    }
+    return r;
+}
+
 extern void nl_close_note(unsigned int id) {
     dequeue_note(id, CLOSE_REASON_DISMISSED);
 }

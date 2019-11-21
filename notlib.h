@@ -24,6 +24,8 @@
 #ifndef NOTLIB_H
 #define NOTLIB_H
 
+#include <stdlib.h>
+
 #define NL_VERSION 0.2
 
 /*

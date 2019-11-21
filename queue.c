@@ -17,9 +17,6 @@
  * along with notlib.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <glib.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
 
 #include "notlib.h"
@@ -116,8 +113,7 @@ extern void enqueue_note(NLNote *n, gchar *client) {
     if (n->id && replace_note(n, client))
         return;
 
-    // literally DO we care about running out of memory?
-    qnode *new_qn = malloc(sizeof(qnode));
+    qnode *new_qn = ealloc(sizeof(qnode));
 
     new_qn->next = NULL;
     if (note_queue_start == NULL) {

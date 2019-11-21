@@ -17,8 +17,6 @@
  * along with notlib.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <glib.h>
 #include <stdint.h>
 
 #include "notlib.h"
@@ -34,7 +32,7 @@ extern NLNote *new_note(uint32_t id, char *appname,
 #endif
                         NLHints *hints,
                         int32_t timeout) {
-    NLNote *n = g_malloc(sizeof(NLNote));
+    NLNote *n = ealloc(sizeof(NLNote));
 
     n->id      = id;
     n->appname = appname;

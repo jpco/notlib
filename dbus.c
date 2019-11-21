@@ -23,10 +23,8 @@
  * https://developer.gnome.org/notification-spec/
  */
 
-#include <glib.h>
 #include <gio/gio.h>
 #include <stdint.h>
-#include <stdio.h>
 
 #include "notlib.h"
 #include "_notlib_internal.h"
@@ -153,7 +151,8 @@ static void notify(GDBusConnection *conn, const gchar *sender,
     char *summary = NULL;
     char *body = NULL;
 #if NL_ACTIONS
-    NLActions *actions = g_malloc0(sizeof(NLActions));
+    NLActions *actions = ealloc(sizeof(NLActions));
+    actions->count = 0;
 #endif
     int32_t timeout = -1;
 #if NL_URGENCY
@@ -197,7 +196,7 @@ static void notify(GDBusConnection *conn, const gchar *sender,
                 break;
             case 6:
                 if (g_variant_is_of_type(content, G_VARIANT_TYPE_DICTIONARY)) {
-                    hints = malloc(sizeof(NLHints));
+                    hints = ealloc(sizeof(NLHints));
                     hints->dict = g_variant_dict_new(content);
 #if NL_URGENCY
                     dict_value = g_variant_lookup_value(content, "urgency", G_VARIANT_TYPE_BYTE);

@@ -66,6 +66,16 @@ extern void dequeue_note(uint32_t id, enum CloseReason reason) {
     }
 }
 
+extern NLNote *lookup_note(uint32_t id) {
+    qnode *qn;
+    for (qn = note_queue_start; qn; qn = qn->next) {
+        if (qn->n->id == id) {
+            return qn->n;
+        }
+    }
+    return NULL;
+}
+
 static int wakeup_queue(gpointer p) {
     int64_t curr_time = g_get_monotonic_time() / 1000;
 

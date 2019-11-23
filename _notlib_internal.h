@@ -53,6 +53,7 @@ struct hints {
 
 void enqueue_note(NLNote *note);
 void dequeue_note(uint32_t id, enum CloseReason);
+NLNote *lookup_note(uint32_t id);
 
 // idrange.c
 

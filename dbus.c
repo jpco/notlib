@@ -64,6 +64,15 @@ static const char *dbus_introspection_xml =
     "            <arg direction=\"out\" name=\"spec_version\"    type=\"s\"/>"
     "        </method>"
 
+#if NL_ACTIONS && NL_REMOTE_ACTIONS
+
+    "        <method name=\"InvokeAction\">"
+    "            <arg direction=\"in\" name=\"id\"  type=\"u\"/>"
+    "            <arg direction=\"in\" name=\"key\" type=\"s\"/>"
+    "        </method>"
+
+#endif
+
     "        <signal name=\"NotificationClosed\">"
     "            <arg name=\"id\"         type=\"u\"/>"
     "            <arg name=\"reason\"     type=\"u\"/>"
@@ -118,6 +127,21 @@ static void close_notification(GDBusConnection *conn, const char *sender,
     g_dbus_method_invocation_return_value(invocation, NULL);
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
+
+#if NL_ACTIONS && NL_REMOTE_ACTIONS
+static void invoke_action(GDBusConnection *conn, const char *sender,
+                          GVariant *params,
+                          GDBusMethodInvocation *invocation) {
+    guint32 id;
+    gchar *key;
+    g_variant_get(params, "(us)", &id, &key);
+
+    signal_action_invoked(id, key);
+
+    g_dbus_method_invocation_return_value(invocation, NULL);
+    g_dbus_connection_flush(conn, NULL, NULL, NULL);
+}
+#endif
 
 NLServerInfo *server_info;
 
@@ -270,8 +294,8 @@ void signal_notification_closed(uint32_t id, enum CloseReason reason) {
 }
 
 #if NL_ACTIONS
-void signal_action_invoked(uint32_t id, const char *ident) {
-    GVariant *body = g_variant_new("(us)", id, ident);
+void signal_action_invoked(uint32_t id, const char *key) {
+    GVariant *body = g_variant_new("(us)", id, key);
     GError *err = NULL;
     g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,
             "ActionInvoked", body, &err);
@@ -302,6 +326,10 @@ void handle_method_call(GDBusConnection *conn,
         close_notification(conn, sender, params, invocation);
     } else if (g_strcmp0(method_name, "GetServerInformation") == 0) {
         get_server_information(conn, sender, params, invocation);
+#if NL_ACTIONS && NL_REMOTE_ACTIONS
+    } else if (g_strcmp0(method_name, "InvokeAction") == 0) {
+        invoke_action(conn, sender, params, invocation);
+#endif
     } else {
         g_printerr("Unknown method name '%s' received from '%s'\n",
                    method_name, sender);

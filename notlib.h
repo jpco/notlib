@@ -34,6 +34,10 @@
 #define NL_ACTIONS 1
 #endif
 
+#ifndef NL_REMOTE_ACTIONS
+#define NL_REMOTE_ACTIONS 0
+#endif
+
 #ifndef NL_URGENCY
 #define NL_URGENCY 1
 #endif

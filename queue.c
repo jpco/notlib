@@ -24,8 +24,8 @@
 
 typedef struct qn {
     NLNote *n;
-    gint64 exp;
-    gchar *client;
+    int64_t exp;
+    char *client;
 
     struct qn *prev;
     struct qn *next;
@@ -68,8 +68,8 @@ extern void dequeue_note(uint32_t id, enum CloseReason reason) {
     }
 }
 
-static gboolean wakeup_queue(gpointer p) {
-    gint64 curr_time = g_get_monotonic_time() / 1000;
+static int wakeup_queue(gpointer p) {
+    int64_t curr_time = g_get_monotonic_time() / 1000;
 
     qnode *qn, *qnext;
     for (qn = note_queue_start; qn; qn = qnext) {
@@ -81,7 +81,7 @@ static gboolean wakeup_queue(gpointer p) {
     return FALSE;
 }
 
-static void setup_qnode(qnode *qn, NLNote *n, gchar *client) {
+static void setup_qnode(qnode *qn, NLNote *n, char *client) {
     qn->n = n;
     qn->client = client;
 
@@ -95,7 +95,7 @@ static void setup_qnode(qnode *qn, NLNote *n, gchar *client) {
     g_timeout_add(timeout_millis, wakeup_queue, NULL);
 }
 
-static int replace_note(NLNote *n, gchar *client) {
+static int replace_note(NLNote *n, char *client) {
     qnode *qn;
     for (qn = note_queue_start; qn; qn = qn->next) {
         if (qn->n->id == n->id) {
@@ -109,7 +109,7 @@ static int replace_note(NLNote *n, gchar *client) {
     return FALSE;
 }
 
-extern void enqueue_note(NLNote *n, gchar *client) {
+extern void enqueue_note(NLNote *n, char *client) {
     if (n->id && replace_note(n, client))
         return;
 

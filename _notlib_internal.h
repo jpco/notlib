@@ -51,7 +51,7 @@ struct hints {
 
 // queue.c
 
-void enqueue_note(NLNote *note, gchar *sender);
+void enqueue_note(NLNote *note, char *sender);
 void dequeue_note(uint32_t id, enum CloseReason);
 
 // idrange.c
@@ -83,8 +83,8 @@ extern int32_t note_timeout(const NLNote *);
 
 // dbus.c
 
-extern void signal_notification_closed(NLNote *, const gchar *, enum CloseReason);
-extern void signal_action_invoked(NLNote *, const gchar *, const char *);
+extern void signal_notification_closed(NLNote *, const char *, enum CloseReason);
+extern void signal_action_invoked(NLNote *, const char *, const char *);
 extern void run_dbus_loop();
 
 #endif  // _NOTLIB_INTERNAL_H

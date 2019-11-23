@@ -163,7 +163,7 @@ extern void free_actions(NLActions *a) {
     if (!a) return;
 
     g_strfreev(a->actions);
-    g_free(a);
+    free(a);
 }
 #endif
 
@@ -179,8 +179,8 @@ extern void free_note(NLNote *n) {
 #endif
 
     g_variant_dict_unref(n->hints->dict);
-    g_free(n->hints);
-    g_free(n);
+    free(n->hints);
+    free(n);
 }
 
 static int32_t dto = 5000;

@@ -83,7 +83,7 @@ static const char *dbus_introspection_xml =
 
 char **server_capabilities;
 
-static void get_capabilities(GDBusConnection *conn, const gchar *sender,
+static void get_capabilities(GDBusConnection *conn, const char *sender,
                              const GVariant *params,
                              GDBusMethodInvocation *invocation) {
     GVariantBuilder *builder;
@@ -105,7 +105,7 @@ static void get_capabilities(GDBusConnection *conn, const gchar *sender,
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
 
-static void close_notification(GDBusConnection *conn, const gchar *sender,
+static void close_notification(GDBusConnection *conn, const char *sender,
                                GVariant *params,
                                GDBusMethodInvocation *invocation) {
     guint32 id;
@@ -121,7 +121,7 @@ static void close_notification(GDBusConnection *conn, const gchar *sender,
 
 NLServerInfo *server_info;
 
-static void get_server_information(GDBusConnection *conn, const gchar *sender,
+static void get_server_information(GDBusConnection *conn, const char *sender,
                                    const GVariant *params,
                                    GDBusMethodInvocation *invocation) {
     GVariant *value;
@@ -143,7 +143,7 @@ static void get_server_information(GDBusConnection *conn, const gchar *sender,
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
 
-static void notify(GDBusConnection *conn, const gchar *sender,
+static void notify(GDBusConnection *conn, const char *sender,
                    GVariant *params,
                    GDBusMethodInvocation *invocation) {
     char *appname = NULL;
@@ -253,7 +253,7 @@ static void notify(GDBusConnection *conn, const gchar *sender,
  * DBus signal logic
  */
 
-void signal_notification_closed(NLNote *n, const gchar *client,
+void signal_notification_closed(NLNote *n, const char *client,
                                 enum CloseReason reason) {
     if (reason < CLOSE_REASON_MIN || reason > CLOSE_REASON_MAX)
         reason = CLOSE_REASON_UNKNOWN;
@@ -269,7 +269,7 @@ void signal_notification_closed(NLNote *n, const gchar *client,
 }
 
 #if NL_ACTIONS
-void signal_action_invoked(NLNote *n, const gchar *client,
+void signal_action_invoked(NLNote *n, const char *client,
                            const char *ident) {
     GVariant *body = g_variant_new("(us)", n->id, ident);
     GError *err = NULL;
@@ -287,10 +287,10 @@ void signal_action_invoked(NLNote *n, const gchar *client,
  */
 
 void handle_method_call(GDBusConnection *conn,
-                        const gchar *sender,
-                        const gchar *object_path,
-                        const gchar *interface_name,
-                        const gchar *method_name,
+                        const char *sender,
+                        const char *object_path,
+                        const char *interface_name,
+                        const char *method_name,
                         GVariant *params,
                         GDBusMethodInvocation *invocation,
                         gpointer user_data) {
@@ -312,7 +312,7 @@ static const GDBusInterfaceVTable interface_vtable = {
     handle_method_call
 };
 
-static void on_bus_acquired(GDBusConnection *conn, const gchar *name,
+static void on_bus_acquired(GDBusConnection *conn, const char *name,
                             gpointer user_data) {
     guint reg_id;
     GError *err = NULL;
@@ -327,13 +327,13 @@ static void on_bus_acquired(GDBusConnection *conn, const gchar *name,
     }
 }
 
-static void on_name_acquired(GDBusConnection *conn, const gchar *name,
+static void on_name_acquired(GDBusConnection *conn, const char *name,
                              gpointer user_data) {
     g_printerr("Got name %s on the session bus\n", name);
     dbus_conn = conn;
 }
 
-static void on_name_lost(GDBusConnection *conn, const gchar *name,
+static void on_name_lost(GDBusConnection *conn, const char *name,
                          gpointer user_data) {
     g_printerr("Lost name %s on the session bus\n", name);
 }

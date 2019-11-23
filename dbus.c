@@ -242,7 +242,7 @@ static void notify(GDBusConnection *conn, const char *sender,
                             hints,
                             timeout);
 
-    enqueue_note(note, g_strdup(sender));
+    enqueue_note(note);
 
     GVariant *reply = g_variant_new("(u)", n_id);
     g_dbus_method_invocation_return_value(invocation, reply);
@@ -253,8 +253,7 @@ static void notify(GDBusConnection *conn, const char *sender,
  * DBus signal logic
  */
 
-void signal_notification_closed(NLNote *n, const char *client,
-                                enum CloseReason reason) {
+void signal_notification_closed(NLNote *n, enum CloseReason reason) {
     if (reason < CLOSE_REASON_MIN || reason > CLOSE_REASON_MAX)
         reason = CLOSE_REASON_UNKNOWN;
 
@@ -269,8 +268,7 @@ void signal_notification_closed(NLNote *n, const char *client,
 }
 
 #if NL_ACTIONS
-void signal_action_invoked(NLNote *n, const char *client,
-                           const char *ident) {
+void signal_action_invoked(NLNote *n, const char *ident) {
     GVariant *body = g_variant_new("(us)", n->id, ident);
     GError *err = NULL;
     g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,

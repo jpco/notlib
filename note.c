@@ -179,12 +179,14 @@ static void init_keys_names(NLActions *a) {
 }
 
 extern const char **nl_action_keys(const NLNote *n) {
+    if (!n) return NULL;
     if (n->actions->keys == NULL)
         init_keys_names(n->actions);
     return (const char **)n->actions->keys;
 }
 
 extern const char *nl_action_name(const NLNote *n, const char *key) {
+    if (!n) return NULL;
     NLActions *a = n->actions;
     if (a == NULL)
         return NULL;

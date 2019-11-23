@@ -15,9 +15,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with notlib.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
+ *
  * The public API for notlib.
  */
 
@@ -40,12 +38,11 @@
 #define NL_URGENCY 1
 #endif
 
-// TODO: more optional features
-//  - ICON
-
 #if NL_ACTIONS
 typedef struct {
     char **actions;
+    char **keys;
+    char **names;
     size_t count;
 } NLActions;
 #endif
@@ -124,10 +121,21 @@ extern int nl_get_hint(const NLNote *n, const char *key, NLHint *out);
 extern char *nl_get_hint_as_string(const NLNote *n, const char *key);
 
 // Type-specific hint accessors
-extern int nl_get_int_hint    (const NLNote *n, const char *key, int *out);
-extern int nl_get_byte_hint   (const NLNote *n, const char *key, unsigned char *out);
-extern int nl_get_boolean_hint(const NLNote *n, const char *key, int *out);
-extern int nl_get_string_hint (const NLNote *n, const char *key, const char **out);
+extern int nl_get_int_hint     (const NLNote *n, const char *key, int *out);
+extern int nl_get_byte_hint    (const NLNote *n, const char *key, unsigned char *out);
+extern int nl_get_boolean_hint (const NLNote *n, const char *key, int *out);
+extern int nl_get_string_hint  (const NLNote *n, const char *key, const char **out);
+
+/*
+ * Interacting with actions.
+ */
+
+#if NL_ACTIONS
+extern void nl_invoke_action       (unsigned int, const char *);
+
+extern const char **nl_action_keys (const NLNote *);
+extern const char *nl_action_name  (const NLNote *, const char *);
+#endif
 
 /*
  * Main entry point(s).
@@ -138,11 +146,5 @@ extern void notlib_run(NLNoteCallbacks, char **, NLServerInfo*);
 
 extern void nl_close_note(unsigned int);
 extern void nl_set_default_timeout(unsigned int);
-
-#if NL_ACTIONS
-// extern void nl_invoke_action(unsigned int, char *);
-// char *nl_action_keys(NLNote *);
-// char *nl_action_name(NLNote *, char *);
-#endif
 
 #endif

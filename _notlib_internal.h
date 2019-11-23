@@ -83,8 +83,8 @@ extern int32_t note_timeout(const NLNote *);
 
 // dbus.c
 
-extern void signal_notification_closed(NLNote *, enum CloseReason);
-extern void signal_action_invoked(NLNote *, const char *);
+extern void signal_notification_closed(uint32_t, enum CloseReason);
+extern void signal_action_invoked(uint32_t, const char *);
 extern void run_dbus_loop();
 
 #endif  // _NOTLIB_INTERNAL_H

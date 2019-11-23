@@ -159,8 +159,55 @@ extern int nl_get_string_hint(const NLNote *n, const char *key, const char **out
 }
 
 #if NL_ACTIONS
+extern void nl_invoke_action(unsigned int id, const char *name) {
+    signal_action_invoked(id, name);
+}
+
+static void init_keys_names(NLActions *a) {
+    char **keys  = ealloc(sizeof(char) * (a->count / 2));
+    char **names = ealloc(sizeof(char) * (a->count / 2));
+
+    size_t i;
+    for (i = 0; i < a->count; i++) {
+        if (i % 2)
+            names[i / 2] = a->actions[i];
+        else
+            keys[i / 2]  = a->actions[i];
+    }
+    a->keys  = keys;
+    a->names = names;
+}
+
+extern const char **nl_action_keys(const NLNote *n) {
+    if (n->actions->keys == NULL)
+        init_keys_names(n->actions);
+    return (const char **)n->actions->keys;
+}
+
+extern const char *nl_action_name(const NLNote *n, const char *key) {
+    NLActions *a = n->actions;
+    if (a == NULL)
+        return NULL;
+
+    if (a->keys == NULL)
+        init_keys_names(a);
+
+    size_t i;
+    size_t nkeys = a->count / 2;
+    for (i = 0; i < nkeys; i++) {
+        if (!strcmp(key, a->keys[i]))
+            return a->names[i];
+    }
+    return NULL;
+}
+
 extern void free_actions(NLActions *a) {
     if (!a) return;
+
+    if (a->keys != NULL)
+        free(a->keys);
+    if (a->names != NULL)
+        free(a->names);
 
     g_strfreev(a->actions);
     free(a);

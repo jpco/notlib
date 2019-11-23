@@ -153,6 +153,8 @@ static void notify(GDBusConnection *conn, const char *sender,
 #if NL_ACTIONS
     NLActions *actions = ealloc(sizeof(NLActions));
     actions->count = 0;
+    actions->keys = NULL;
+    actions->names = NULL;
 #endif
     int32_t timeout = -1;
 #if NL_URGENCY
@@ -253,11 +255,11 @@ static void notify(GDBusConnection *conn, const char *sender,
  * DBus signal logic
  */
 
-void signal_notification_closed(NLNote *n, enum CloseReason reason) {
+void signal_notification_closed(uint32_t id, enum CloseReason reason) {
     if (reason < CLOSE_REASON_MIN || reason > CLOSE_REASON_MAX)
         reason = CLOSE_REASON_UNKNOWN;
 
-    GVariant *body = g_variant_new("(uu)", n->id, reason);
+    GVariant *body = g_variant_new("(uu)", id, reason);
     GError *err = NULL;
     g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,
             "NotificationClosed", body, &err);
@@ -268,8 +270,8 @@ void signal_notification_closed(NLNote *n, enum CloseReason reason) {
 }
 
 #if NL_ACTIONS
-void signal_action_invoked(NLNote *n, const char *ident) {
-    GVariant *body = g_variant_new("(us)", n->id, ident);
+void signal_action_invoked(uint32_t id, const char *ident) {
+    GVariant *body = g_variant_new("(us)", id, ident);
     GError *err = NULL;
     g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,
             "ActionInvoked", body, &err);

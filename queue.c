@@ -50,7 +50,7 @@ static void dequeue_note_by_node(qnode *qn, enum CloseReason reason) {
     if (callbacks.close != NULL)
         callbacks.close(qn->n);
 
-    signal_notification_closed(qn->n, reason);
+    signal_notification_closed(qn->n->id, reason);
 
     free_note(qn->n);
     free(qn);

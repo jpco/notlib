@@ -22,15 +22,16 @@ and then do whatever you want with the produced file `libnotlib.a`.
 
 ## Features
 
-There are currently two optional features, which may be enabled or disabled by setting the build flags `-D${NL_FEATURE}=0` or `-D${NL_FEATURE}=1`.  These features are:
+There are currently three optional features, which may be enabled or disabled by setting the build flags `-D${NL_FEATURE}=0` or `-D${NL_FEATURE}=1`.  These features are:
 
- - `NL_ACTIONS`: Controls whether the server reports having the "actions" capability.
+ - `NL_ACTIONS`: Controls whether the server handles actions.  Corresponds with the `actions` capability.
+ - `NL_REMOTE_ACTIONS`: Controls whether the server supports an `InvokeAction` message which allows client binaries to invoke actions on open notifications.  Corresponds with the `x-remote-actions` capability.  Has no effect if `NL_ACTIONS` is not also true.
  - `NL_URGENCY`: Controls whether notlib specially handles the "urgency" hint.  If disabled, notlib will handle urgency like any other hint.
 
 
 ## API
 
-The notlib API is extremely simple.  The primary data type in notlib is `NLNote`:
+The notlib API is fairly simple.  The primary data type in notlib is `NLNote`:
 
 ```c
 typedef struct {
@@ -125,10 +126,20 @@ typedef struct {
 } NLHint;
 ```
 
+### Actions
+
+If `NL_ACTIONS` is enabled, there are a few helper functions provided for dealing with actions.
+
+```
+extern void nl_invoke_action(unsigned int id, const char *key);
+
+extern const char **nl_action_keys(const NLNote *n);
+extern const char *nl_action_name(const NLNote *n, const char *key);
+```
+
 
 ## TODO
 
  - Several more optional features: icon, etc.
- - Invoking actions.
  - A clearer (documented) idea of threading: does a long-running callback block receipt of further notifications?
- - Proper handling of errors that may arise.
+ - Proper error handling.

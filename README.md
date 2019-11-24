@@ -25,7 +25,7 @@ and then do whatever you want with the produced file `libnotlib.a`.
 There are currently three optional features, which may be enabled or disabled by setting the build flags `-D${NL_FEATURE}=0` or `-D${NL_FEATURE}=1`.  These features are:
 
  - `NL_ACTIONS`: Controls whether the server handles actions.  Corresponds with the `actions` capability.
- - `NL_REMOTE_ACTIONS`: Controls whether the server supports an `InvokeAction` message which allows client binaries to invoke actions on open notifications.  Corresponds with the `x-remote-actions` capability.  Has no effect if `NL_ACTIONS` is not also true.
+ - `NL_REMOTE_ACTIONS`: Controls whether the server supports an `InvokeAction` message which allows client binaries to invoke actions on open notifications.  Corresponds with the `x-notlib-remote-actions` capability.  Has no effect if `NL_ACTIONS` is not also true.
  - `NL_URGENCY`: Controls whether notlib specially handles the "urgency" hint.  If disabled, notlib will handle urgency like any other hint.
 
 

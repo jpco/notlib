@@ -159,8 +159,20 @@ extern int nl_get_string_hint(const NLNote *n, const char *key, const char **out
 }
 
 #if NL_ACTIONS
-extern void nl_invoke_action(unsigned int id, const char *name) {
-    signal_action_invoked(id, name);
+extern int nl_invoke_action(unsigned int id, const char *key) {
+    NLNote *n = lookup_note(id);
+    if (strcmp(key, "default") && !nl_action_name(n, key))
+        return 0;
+
+    signal_action_invoked(id, key);
+
+    int resident;
+    if (nl_get_boolean_hint(n, "resident", &resident)  && resident)
+        goto ret;
+
+    nl_close_note(id);
+ret:
+    return 1;
 }
 
 static void init_keys_names(NLActions *a) {

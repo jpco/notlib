@@ -135,7 +135,10 @@ extern int nl_get_string_hint  (const NLNote *n, const char *key, const char **o
  */
 
 #if NL_ACTIONS
-extern void nl_invoke_action       (unsigned int, const char *);
+// Invokes an action only if the given ID refers to an open notification, and
+// the key is "default" or was specified by the notification.  Returns truthy
+// if an action was, indeed, invoked.
+extern int nl_invoke_action        (unsigned int id, const char *key);
 
 extern const char **nl_action_keys (const NLNote *);
 extern const char *nl_action_name  (const NLNote *, const char *);

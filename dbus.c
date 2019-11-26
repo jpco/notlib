@@ -138,10 +138,7 @@ static void invoke_action(GDBusConnection *conn, const char *sender,
 
     // TODO: return empty dbus error if note does not currently exist
     // or note does not have invoked action
-
-    NLNote *n = lookup_note(id);
-    if (nl_action_name(n, key))
-        signal_action_invoked(id, key);
+    nl_invoke_action(id, key);
 
     g_dbus_method_invocation_return_value(invocation, NULL);
     g_dbus_connection_flush(conn, NULL, NULL, NULL);

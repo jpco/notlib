@@ -164,8 +164,8 @@ extern void nl_invoke_action(unsigned int id, const char *name) {
 }
 
 static void init_keys_names(NLActions *a) {
-    char **keys  = ealloc(sizeof(char) * (a->count / 2));
-    char **names = ealloc(sizeof(char) * (a->count / 2));
+    char **keys  = ealloc(sizeof(char *) * (a->count / 2));
+    char **names = ealloc(sizeof(char *) * (a->count / 2));
 
     size_t i;
     for (i = 0; i < a->count; i++) {

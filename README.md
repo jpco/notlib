@@ -143,3 +143,7 @@ extern const char *nl_action_name(const NLNote *n, const char *key);
  - Several more optional features: icon, etc.
  - A clearer (documented) idea of threading: does a long-running callback block receipt of further notifications?
  - Proper error handling.
+ - Close (dismissed) notifications when an action is invoked (but support 'resident' hint maybe?)
+ - Allow invocations of 'default' on notifications that haven't advertised it?
+ - Support 'x-canonical-private-synchronous'/'x-dunst-stack-tag' (NOT the non-prefixed versions!)
+ - Persistence?  How would that work?

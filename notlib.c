@@ -41,12 +41,16 @@ extern void *ealloc(size_t n) {
 }
 
 extern void nl_close_note(unsigned int id) {
-    dequeue_note(id, CLOSE_REASON_DISMISSED);
+    queue_close(id, CLOSE_REASON_DISMISSED);
 }
 
 extern void notlib_run(NLNoteCallbacks cbs, char **caps, NLServerInfo *info) {
     callbacks = cbs;
     server_capabilities = caps;
     server_info = info;
+
+    pthread_t tid;
+    pthread_create(&tid, NULL, queue_listen, NULL);
+
     run_dbus_loop();
 }

@@ -1,4 +1,4 @@
-/* Copyright 2018 Jack Conger */
+/* Copyright 2019 Jack Conger */
 
 /*
  * This file is part of notlib.
@@ -49,11 +49,17 @@ struct hints {
     GVariantDict *dict;
 };
 
+
 // queue.c
 
-void enqueue_note(NLNote *note);
-void dequeue_note(uint32_t id, enum CloseReason);
-NLNote *lookup_note(uint32_t id);
+/* Entry point for callback threads. */
+extern void *queue_listen(void *);
+
+/* Called by main thread. */
+extern void queue_notify (NLNote *);
+extern void queue_close  (uint32_t id, enum CloseReason);
+extern int  queue_call   (uint32_t id, int (*callback)(const NLNote *, void *), void *);
+
 
 // idrange.c
 

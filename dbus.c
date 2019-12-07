@@ -122,7 +122,7 @@ static void close_notification(GDBusConnection *conn, const char *sender,
 
     // TODO: return empty dbus error if note does not currently exist
 
-    dequeue_note(id, CLOSE_REASON_CLOSED);
+    queue_close(id, CLOSE_REASON_CLOSED);
 
     g_dbus_method_invocation_return_value(invocation, NULL);
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
@@ -140,6 +140,7 @@ static void invoke_action(GDBusConnection *conn, const char *sender,
     // or note does not have invoked action
     nl_invoke_action(id, key);
 
+    g_free(key);
     g_dbus_method_invocation_return_value(invocation, NULL);
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
@@ -270,7 +271,7 @@ static void notify(GDBusConnection *conn, const char *sender,
                             hints,
                             timeout);
 
-    enqueue_note(note);
+    queue_notify(note);
 
     GVariant *reply = g_variant_new("(u)", n_id);
     g_dbus_method_invocation_return_value(invocation, reply);

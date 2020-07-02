@@ -36,7 +36,7 @@ install : ${LIBFULL}
 	cp -r $(wildcard build/*) /usr/local
 
 clean :
-	rm -r ${OBJS} libnotlib.a build/
+	rm -rf ${OBJS} libnotlib.a build/
 
 dbus.o      : dbus.c    notlib.h _notlib_internal.h
 notlib.o    : notlib.c  notlib.h _notlib_internal.h

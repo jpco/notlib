@@ -16,8 +16,10 @@ DEPS     = gio-2.0 gobject-2.0 glib-2.0
 LIBS     = $(shell pkg-config --libs ${DEPS})
 INCLUDES = $(shell pkg-config --cflags ${DEPS})
 
+PEDANTRY = -Wall -Werror -Wpedantic -std=c99
+OPTFLAGS = -O2
 LIBFLAGS = -Wl,-soname,${LIBMAJOR}
-CFLAGS   = -fPIC -Wall -Werror -pthread -O2 ${LIBS} ${INCLUDES} ${DEFINES}
+CFLAGS   = -fPIC -pthread ${PEDANTRY} ${OPTFLAGS} ${LIBS} ${INCLUDES} ${DEFINES}
 
 ${LIBFULL} : ${OBJS} Makefile
 	${CC} -shared -o $@ ${LIBFLAGS} ${OBJS}

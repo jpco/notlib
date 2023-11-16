@@ -1,4 +1,4 @@
-/* Copyright 2019 Jack Conger */
+/* Copyright 2019-2023 Jack Conger */
 
 /*
  * This file is part of notlib.
@@ -31,7 +31,7 @@
 
 #define LOCKED(queue, expr) do { \
     pthread_mutex_lock(&(queue).lock); \
-    (expr); \
+    expr; \
     pthread_mutex_unlock(&(queue).lock); \
 } while (0);
 

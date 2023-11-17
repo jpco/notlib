@@ -291,9 +291,10 @@ void signal_notification_closed(uint32_t id, enum CloseReason reason) {
     g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,
             "NotificationClosed", body, &err);
 
-    // TODO: Handle the error
-    if (err != NULL)
+    if (err != NULL) {
+        fprintf(stderr, "Could not emit NotificationClosed signal: %s\n", err->message);
         g_error_free(err);
+    }
 }
 
 #if NL_ACTIONS
@@ -303,9 +304,10 @@ void signal_action_invoked(uint32_t id, const char *key) {
     g_dbus_connection_emit_signal(dbus_conn, NULL, FDN_PATH, FDN_IFAC,
             "ActionInvoked", body, &err);
 
-    // TODO: Handle the error
-    if (err != NULL)
+    if (err != NULL) {
+        fprintf(stderr, "Could not emit ActionInvoked signal: %s\n", err->message);
         g_error_free(err);
+    }
 }
 #endif
 

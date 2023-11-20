@@ -13,13 +13,12 @@ CSRC    = dbus.c note.c queue.c notlib.c idrange.c
 OBJS    = dbus.o note.o queue.o notlib.o idrange.o
 
 DEPS     = gio-2.0 gobject-2.0 glib-2.0
-LIBS     = $(shell pkg-config --libs ${DEPS})
 INCLUDES = $(shell pkg-config --cflags ${DEPS})
 
 PEDANTRY = -Wall -Werror -Wpedantic -std=c99
 OPTFLAGS = -O2
 LIBFLAGS = -Wl,-soname,${LIBMAJOR}
-CFLAGS   = -fPIC -pthread ${PEDANTRY} ${OPTFLAGS} ${LIBS} ${INCLUDES} ${DEFINES}
+CFLAGS   = -fPIC -pthread ${PEDANTRY} ${OPTFLAGS} ${INCLUDES} ${DEFINES}
 
 ${LIBFULL} : ${OBJS} Makefile
 	${CC} -shared -o $@ ${LIBFLAGS} ${OBJS}

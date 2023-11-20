@@ -64,7 +64,7 @@ extern int  queue_call   (uint32_t id, int (*callback)(const NLNote *, void *), 
 // idrange.c
 
 extern void claim_id(uint32_t);
-extern uint32_t get_unclaimed_id();
+extern uint32_t get_unclaimed_id(void);
 
 // note.c
 
@@ -92,6 +92,6 @@ extern int32_t note_timeout(const NLNote *);
 
 extern void signal_notification_closed(uint32_t, enum CloseReason);
 extern void signal_action_invoked(uint32_t, const char *);
-extern void run_dbus_loop();
+extern void run_dbus_loop(void);
 
 #endif  // _NOTLIB_INTERNAL_H

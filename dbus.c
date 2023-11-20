@@ -375,7 +375,7 @@ static void on_name_lost(GDBusConnection *conn, const char *name,
  * The entry point to notlib.
  */
 
-extern void run_dbus_loop() {
+extern void run_dbus_loop(void) {
     GMainLoop *loop;
     guint owner_id;
 

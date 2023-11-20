@@ -91,7 +91,7 @@ extern void claim_id(uint32_t n) {
 
 // Claims and returns the lowest unclaimed ID.  If no such ID exists within
 // the uint32 space, clears out all current claims and then claims/returns 1.
-extern uint32_t get_unclaimed_id() {
+extern uint32_t get_unclaimed_id(void) {
     if (r == NULL || r->min > 1) {
         claim_id(1);
         return 1;

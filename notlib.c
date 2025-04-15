@@ -50,7 +50,7 @@ extern void notlib_run(NLNoteCallbacks cbs, char **caps, NLServerInfo *info) {
     server_info = info;
 
     pthread_t tid;
-    pthread_create(&tid, NULL, queue_listen, NULL);
+    pthread_create(&tid, NULL, run_dbus_loop, NULL);
 
-    run_dbus_loop();
+    queue_listen();
 }

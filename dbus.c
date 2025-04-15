@@ -371,11 +371,9 @@ static void on_name_lost(GDBusConnection *conn, const char *name,
     g_printerr("Lost name %s on the session bus\n", name);
 }
 
-/**
- * The entry point to notlib.
- */
+// Entry point to D-Bus-listening thread.
 
-extern void run_dbus_loop(void) {
+extern void *run_dbus_loop(void *_) {
     GMainLoop *loop;
     guint owner_id;
 
@@ -394,4 +392,6 @@ extern void run_dbus_loop(void) {
     g_main_loop_run(loop);
 
     g_bus_unown_name(owner_id);
+
+    return NULL;
 }

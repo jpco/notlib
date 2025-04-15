@@ -52,8 +52,8 @@ struct hints {
 
 // queue.c
 
-/* Entry point for callback threads. */
-extern void *queue_listen(void *);
+/* Entry point for callback thread. */
+extern void queue_listen(void);
 
 /* Called by main thread. */
 extern void queue_notify (NLNote *);
@@ -92,6 +92,6 @@ extern int32_t note_timeout(const NLNote *);
 
 extern void signal_notification_closed(uint32_t, enum CloseReason);
 extern void signal_action_invoked(uint32_t, const char *);
-extern void run_dbus_loop(void);
+extern void *run_dbus_loop(void *);
 
 #endif  // _NOTLIB_INTERNAL_H

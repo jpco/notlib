@@ -146,8 +146,9 @@ extern const char *nl_action_name  (const NLNote *, const char *);
 
 /*
  * Main entry point(s).
- * TODO: describe semantics of how the callbacks get called
- * (e.g., concurrency? one-at-a-time? what's the deal?)
+ *
+ * Notlib generates a new pthread to listen for D-Bus messages and queue events.
+ * Callbacks are made synchronously in the same thread which invokes notlib_run.
  */
 extern void notlib_run(NLNoteCallbacks, char **, NLServerInfo*);
 

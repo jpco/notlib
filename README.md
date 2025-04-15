@@ -141,6 +141,7 @@ extern const char *nl_action_name(const NLNote *n, const char *key);
 ## TODO
 
  - Several more optional features: icon, etc.
- - A clearer (documented) idea of threading: does a long-running callback block receipt of further notifications?
+    - Build a graphical demo server to force this
  - Support 'x-canonical-private-synchronous'/'x-dunst-stack-tag' (NOT the non-prefixed versions!)
+ - Better-defined (or at least thought-through) signal handling
  - Persistence?  How would that work?

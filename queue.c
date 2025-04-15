@@ -129,7 +129,7 @@ static qnode *queue_yank_id(queue *q, uint32_t id) {
 
 
 /**
- * CALLBACK THREADS
+ * CALLBACK THREAD
  */
 
 static int scan_for_timeout(gpointer p);
@@ -192,7 +192,7 @@ static void do_close(qnode *qn) {
     free(qn);
 }
 
-extern void *queue_listen(void *_) {
+extern void queue_listen(void) {
     while (1) {
         qnode *qn;
         LOCKED(notify_queue, {
@@ -209,7 +209,6 @@ extern void *queue_listen(void *_) {
             do_close(qn);
         }
     }
-    return NULL;
 }
 
 

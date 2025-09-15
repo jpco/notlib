@@ -24,9 +24,9 @@ and then do whatever you want with the produced file `libnotlib.a`.
 
 There are currently three optional features, which may be enabled or disabled by setting the build flags `-D${NL_FEATURE}=0` or `-D${NL_FEATURE}=1`.  These features are:
 
- - `NL_ACTIONS`: Controls whether the server handles actions.  Corresponds with the `actions` capability.
- - `NL_REMOTE_ACTIONS`: Controls whether the server supports an `InvokeAction` message which allows client binaries to invoke actions on open notifications.  Corresponds with the `x-notlib-remote-actions` capability.  Has no effect if `NL_ACTIONS` is not also true.
- - `NL_URGENCY`: Controls whether notlib specially handles the "urgency" hint.  If disabled, notlib will handle urgency like any other hint.
+ - `NL_ACTIONS`: Controls whether the server handles actions.  Corresponds with the `actions` capability.  By default, `-DNL_ACTIONS=1`.
+ - `NL_REMOTE_ACTIONS`: Controls whether the server supports an `InvokeAction` message which allows client binaries to invoke actions on open notifications.  Corresponds with the `x-notlib-remote-actions` capability.  Has no effect if `NL_ACTIONS` is not also true.  By default, `-DNL_REMOTE_ACTIONS=0`.
+ - `NL_URGENCY`: Controls whether notlib specially handles the "urgency" hint.  If disabled, notlib will handle urgency like any other hint.  By default, `-DNL_URGENCY=1`.
 
 
 ## API
@@ -67,7 +67,6 @@ typedef struct {
     char *app_name;
     char *author;
     char *version;
-    char **capabilities;
 } NLServerInfo;
 ```
 
@@ -130,7 +129,7 @@ typedef struct {
 
 If `NL_ACTIONS` is enabled, there are a few helper functions provided for dealing with actions.
 
-```
+```c
 extern int nl_invoke_action(unsigned int id, const char *key);
 
 extern const char **nl_action_keys(const NLNote *n);
@@ -144,4 +143,5 @@ extern const char *nl_action_name(const NLNote *n, const char *key);
     - Build a graphical demo server to force this
  - Support 'x-canonical-private-synchronous'/'x-dunst-stack-tag' (NOT the non-prefixed versions!)
  - Better-defined (or at least thought-through) signal handling
+ - Documented variable ownership in callbacks
  - Persistence?  How would that work?

@@ -109,7 +109,6 @@ typedef struct {
     char *app_name;
     char *author;
     char *version;
-    char **capabilities;
 } NLServerInfo;
 
 /* public functions */

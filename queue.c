@@ -41,6 +41,7 @@ typedef struct qn {
 
     int64_t exp;
     int action;
+    char *tag;
     struct qn *prev;
     struct qn *next;
 } qnode;
@@ -96,6 +97,17 @@ static qnode *queue_find_id(queue *q, uint32_t id) {
     return NULL;
 }
 
+#if NL_TAGS
+static qnode *queue_find_tag(queue *q, char *tag) {
+    qnode *qn;
+    for (qn = q->start; qn; qn = qn->next) {
+        if (strcmp(qn->tag, tag) == 0)
+            return qn;
+    }
+    return NULL;
+}
+#endif
+
 static void queue_yank(queue *q, qnode *qn) {
     if (qn->prev != NULL) {
         qn->prev->next = qn->next;
@@ -127,6 +139,14 @@ static qnode *queue_yank_id(queue *q, uint32_t id) {
     return qn;
 }
 
+static void free_qn(qnode *qn) {
+    if (qn->n != NULL)
+        free_note(qn->n);
+    if (qn->tag != NULL)
+        free(qn->tag);
+    free(qn);
+}
+
 
 /**
  * CALLBACK THREAD
@@ -149,10 +169,8 @@ static void do_notify(qnode *qn) {
 
     LOCKED(timeout_queue, queue_insert(&timeout_queue, qn));
 
-    if (replaced != NULL) {
-        free_note(replaced->n);
-        free(replaced);
-    }
+    if (replaced != NULL)
+        free_qn(replaced);
 
     int32_t timeout_ms = note_timeout(qn->n);
     if (timeout_ms == 0) {
@@ -182,14 +200,11 @@ static void do_close(qnode *qn) {
             callbacks.close(closed->n);
         signal_notification_closed(closed->n->id, qn->action);
         if (closed != qn) {
-            free_note(closed->n);
-            free(closed);
+            free_qn(closed);
         }
     }
 
-    if (qn->n != NULL)
-        free_note(qn->n);
-    free(qn);
+    free_qn(qn);
 }
 
 extern void queue_listen(void) {
@@ -244,11 +259,18 @@ static void enqueue(qnode *qn, int action) {
     });
 }
 
-extern void queue_notify(NLNote *n) {
+extern void queue_notify(NLNote *n
+#if NL_TAGS
+    , char *tag
+#endif
+) {
     qnode *qn = ealloc(sizeof(qnode));
     qn->n = n;
     qn->id = n->id;
     qn->exp = 0;
+#if NL_TAGS
+    qn->tag = tag;
+#endif
     enqueue(qn, QUEUE_NOTIFY);
 }
 
@@ -289,3 +311,20 @@ extern int queue_call(uint32_t id, int (*callback)(const NLNote *, void *), void
     }
     return result;
 }
+
+#if NL_TAGS
+extern int tag_to_id(char *tag) {
+    qnode *n;
+    int id = 0;
+    LOCKED(notify_queue, {
+        if ((n = queue_find_tag(&notify_queue, tag)))
+            id = n->id;
+    });
+    if (id == 0)
+        LOCKED(timeout_queue, {
+            if ((n = queue_find_tag(&timeout_queue, tag)))
+            id = n->id;
+        });
+    return id;
+}
+#endif

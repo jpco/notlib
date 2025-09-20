@@ -2,14 +2,14 @@
 
 A simple C library for building notification servers.  Not ready for the limelight just yet.
 
-Notlib depends on gio/gobject/glib (in particular, the `dbus-glib` package on archlinux, or equivalents in other environments) for its dbus implementation and main loop.
+Notlib depends on GDBus (which on archlinux is provided by the `glib2` package; other systems may vary) for its dbus implementation and main loop.
 
 
 ## Installation
 
 Installation should be wildly simple:
 
-0. Install packages required to include `<glib.h>` and `<gio.h>`.
+0. Install package(s) required to include `<glib.h>` and `<gio.h>`.
 1. `make`
 2. `sudo make install`
 
@@ -22,11 +22,15 @@ and then do whatever you want with the produced file `libnotlib.a`.
 
 ## Features
 
-There are currently three optional features, which may be enabled or disabled by setting the build flags `-D${NL_FEATURE}=0` or `-D${NL_FEATURE}=1`.  These features are:
+There are currently four optional features, which may be enabled or disabled by setting the build flags `-D${NL_FEATURE}=0` or `-D${NL_FEATURE}=1`.  These features are:
 
  - `NL_ACTIONS`: Controls whether the server handles actions.  Corresponds with the `actions` capability.  By default, `-DNL_ACTIONS=1`.
+
  - `NL_REMOTE_ACTIONS`: Controls whether the server supports an `InvokeAction` message which allows client binaries to invoke actions on open notifications.  Corresponds with the `x-notlib-remote-actions` capability.  Has no effect if `NL_ACTIONS` is not also true.  By default, `-DNL_REMOTE_ACTIONS=0`.
+
  - `NL_URGENCY`: Controls whether notlib specially handles the "urgency" hint.  If disabled, notlib will handle urgency like any other hint.  By default, `-DNL_URGENCY=1`.
+
+ - `NL_TAGS`: Controls whether notlib specially handles the "synchronous", "private-synchronous", "x-canonical-private-synchronous", and "x-dunst-stack-tag" hints.  If set, then any notification received with the same value of one these tags as another currently-open note will be given the same ID as that open note, replacing it.  Corresponds with the `x-canonical-private-synchronous` and `x-dunst-stack-tag` capabilities.  By default, `-DNL_TAGS=0`.
 
 
 ## API
@@ -127,7 +131,7 @@ typedef struct {
 
 ### Actions
 
-If `NL_ACTIONS` is enabled, there are a few helper functions provided for dealing with actions.
+If `NL_ACTIONS` are enabled, there are a few helper functions provided for dealing with actions.
 
 ```c
 extern int nl_invoke_action(unsigned int id, const char *key);
@@ -141,7 +145,7 @@ extern const char *nl_action_name(const NLNote *n, const char *key);
 
  - Several more optional features: icon, etc.
     - Build a graphical demo server to force this
- - Support 'x-canonical-private-synchronous'/'x-dunst-stack-tag' (NOT the non-prefixed versions!)
  - Better-defined (or at least thought-through) signal handling
  - Documented variable ownership in callbacks
- - Persistence?  How would that work?
+ - Polling-based API
+ - Persistence

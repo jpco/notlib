@@ -42,6 +42,10 @@
 #define NL_URGENCY 1
 #endif
 
+#ifndef NL_TAGS
+#define NL_TAGS 0
+#endif
+
 #if NL_ACTIONS
 typedef struct {
     char **actions;

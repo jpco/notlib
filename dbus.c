@@ -170,6 +170,25 @@ static void get_server_information(GDBusConnection *conn, const char *sender,
     g_dbus_connection_flush(conn, NULL, NULL, NULL);
 }
 
+#if NL_TAGS
+static const char *tag_hints[] = {
+    "synchronous",
+    "private-synchronous",
+    "x-canonical-private-synchronous",
+    "x-dunst-stack-tag",
+    NULL
+};
+
+static GVariant *search_for_tag_hint(GVariant *hints) {
+    for (int i = 0; tag_hints[i] != NULL; i++) {
+        GVariant *v = g_variant_lookup_value(hints, tag_hints[i], G_VARIANT_TYPE_STRING);
+        if (v != NULL)
+            return v;
+    }
+    return NULL;
+}
+#endif
+
 static void notify(GDBusConnection *conn, const char *sender,
                    GVariant *params,
                    GDBusMethodInvocation *invocation) {
@@ -186,6 +205,9 @@ static void notify(GDBusConnection *conn, const char *sender,
     int32_t timeout = -1;
 #if NL_URGENCY
     enum NLUrgency urgency = 1;
+#endif
+#if NL_TAGS
+    char *tag = NULL;
 #endif
     NLHints *hints = NULL;
 
@@ -228,9 +250,14 @@ static void notify(GDBusConnection *conn, const char *sender,
                     hints = ealloc(sizeof(NLHints));
                     hints->dict = g_variant_dict_new(content);
 #if NL_URGENCY
-                    dict_value = g_variant_lookup_value(content, "urgency", G_VARIANT_TYPE_BYTE);
-                    if (dict_value) {
+                    if ((dict_value = g_variant_lookup_value(content, "urgency", G_VARIANT_TYPE_BYTE))) {
                         urgency = g_variant_get_byte(dict_value);
+                        g_variant_unref(dict_value);
+                    }
+#endif
+#if NL_TAGS
+                    if ((dict_value = search_for_tag_hint(content))) {
+                        tag = g_variant_dup_string(dict_value, NULL);
                         g_variant_unref(dict_value);
                     }
 #endif
@@ -245,6 +272,11 @@ static void notify(GDBusConnection *conn, const char *sender,
             ++idx;
         }
     }
+
+#if NL_TAGS
+    if (tag != NULL)
+        replaces_id = tag_to_id(tag);
+#endif
 
     uint32_t n_id;
     if (replaces_id != 0) {
@@ -271,7 +303,11 @@ static void notify(GDBusConnection *conn, const char *sender,
                             hints,
                             timeout);
 
-    queue_notify(note);
+    queue_notify(note
+#if NL_TAGS
+            , tag
+#endif
+    );
 
     GVariant *reply = g_variant_new("(u)", n_id);
     g_dbus_method_invocation_return_value(invocation, reply);

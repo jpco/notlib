@@ -259,11 +259,7 @@ static void enqueue(qnode *qn, int action) {
     });
 }
 
-extern void queue_notify(NLNote *n
-#if NL_TAGS
-    , char *tag
-#endif
-) {
+extern void queue_notify(NLNote *n, char *tag) {
     qnode *qn = ealloc(sizeof(qnode));
     qn->n = n;
     qn->id = n->id;
@@ -279,6 +275,7 @@ extern void queue_close(uint32_t id, enum CloseReason reason) {
     qn->n = NULL;
     qn->id = id;
     qn->exp = 0;
+    qn->tag = NULL;
     enqueue(qn, reason);
 }
 

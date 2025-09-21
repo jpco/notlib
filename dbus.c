@@ -206,9 +206,7 @@ static void notify(GDBusConnection *conn, const char *sender,
 #if NL_URGENCY
     enum NLUrgency urgency = 1;
 #endif
-#if NL_TAGS
     char *tag = NULL;
-#endif
     NLHints *hints = NULL;
 
     {
@@ -303,11 +301,7 @@ static void notify(GDBusConnection *conn, const char *sender,
                             hints,
                             timeout);
 
-    queue_notify(note
-#if NL_TAGS
-            , tag
-#endif
-    );
+    queue_notify(note, tag);
 
     GVariant *reply = g_variant_new("(u)", n_id);
     g_dbus_method_invocation_return_value(invocation, reply);

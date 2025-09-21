@@ -56,11 +56,7 @@ struct hints {
 extern void queue_listen(void);
 
 /* Called by main thread. */
-extern void queue_notify (NLNote *
-#if NL_TAGS
-	, char *
-#endif
-);
+extern void queue_notify (NLNote *, char *);
 extern void queue_close  (uint32_t id, enum CloseReason);
 extern int  queue_call   (uint32_t id, int (*callback)(const NLNote *, void *), void *);
 #if NL_TAGS

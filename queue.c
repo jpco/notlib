@@ -101,7 +101,7 @@ static qnode *queue_find_id(queue *q, uint32_t id) {
 static qnode *queue_find_tag(queue *q, char *tag) {
     qnode *qn;
     for (qn = q->start; qn; qn = qn->next) {
-        if (strcmp(qn->tag, tag) == 0)
+        if (qn->tag != NULL && strcmp(qn->tag, tag) == 0)
             return qn;
     }
     return NULL;
